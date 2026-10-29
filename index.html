@@ -1,66 +1,129 @@
 <!DOCTYPE html>
+<!--
+  End-times timeline study notes: one self-contained page, hosted as-is on GitHub Pages.
+
+  All of the content lives in the two <template> blocks near the end of <body>:
+    #timeline-content    The Timeline tab. Each div.era holds its events in order. Each event is a
+                         <section data-id> with an <h2> title, a <p class="summary">, a <p class="refs">,
+                         then its notes. data-kind="judgment" draws the event as a diamond.
+                         data-id is the event's permanent link name (#e09), not its position: the
+                         number shown comes from the order, so e10 can sit before e09.
+    #revelation-content  The Reading Revelation tab: an overview page, then one
+                         <section data-ch="N"> per chapter. To add notes for a chapter, fill in its
+                         section: keep the <h2>, add a <p class="summary">, then the notes.
+                         A section with only an <h2> shows as "not covered yet". One section can also
+                         cover a run of chapters, e.g. data-ch="2-3".
+  data-events on a chapter lists the timeline events it connects to; the links appear on both tabs.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>End-times timeline: post-trib premillennial study notes</title>
+<title>Revelation Timeline</title>
+<meta name="description" content="Study notes on the end-times timeline, from the first coming to New Jerusalem, as read by post-tribulation premillennialism, with chapter notes on Revelation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#EEF1F5; --surface:#FFFFFF; --ink:#17223A; --muted:#566079; --rule:#D3D9E3;
-  --gold:#94701A; --gold-soft:#F4ECD6; --wine:#8C2A3A; --wine-soft:#F6E3E6; --teal:#24635F; --teal-soft:#DDEEEC;
-  --sel:#E4E9F2;
-  box-sizing:border-box;
+  --paper:#F6F8F9; --surface:#FFFFFF; --ink:#0F3350; --muted:#4B6274; --rule:#D5E0E7; --sel:#E3EDF3;
+  --gold:#8F6610; --gold-soft:#F6EBCD; --wine:#A0285A; --wine-soft:#F9E4ED; --wine-sel:#F3D5E2;
+  --teal:#13686F; --teal-soft:#D8EEF0; --blue:#1C5D93; --blue-soft:#DCEAF6;
+  color-scheme:light;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --paper:#0F141D; --surface:#161D29; --ink:#E6E9EF; --muted:#9AA3B6; --rule:#2A3344;
-    --gold:#D8B455; --gold-soft:#2E2816; --wine:#E58492; --wine-soft:#33191F; --teal:#6EC3BB; --teal-soft:#14302E; --sel:#1F2838;
+    --paper:#1F2D3A; --surface:#283847; --ink:#EAF0F4; --muted:#AAB9C5; --rule:#3B4D5D; --sel:#314455;
+    --gold:#E3BC5F; --gold-soft:#3D3826; --wine:#F293BA; --wine-soft:#432D3E; --wine-sel:#54364C;
+    --teal:#78CAD0; --teal-soft:#23424A; --blue:#93C3F0; --blue-soft:#26435D;
+    color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#0F141D; --surface:#161D29; --ink:#E6E9EF; --muted:#9AA3B6; --rule:#2A3344;
-  --gold:#D8B455; --gold-soft:#2E2816; --wine:#E58492; --wine-soft:#33191F; --teal:#6EC3BB; --teal-soft:#14302E; --sel:#1F2838;
+  --paper:#1F2D3A; --surface:#283847; --ink:#EAF0F4; --muted:#AAB9C5; --rule:#3B4D5D; --sel:#314455;
+  --gold:#E3BC5F; --gold-soft:#3D3826; --wine:#F293BA; --wine-soft:#432D3E; --wine-sel:#54364C;
+  --teal:#78CAD0; --teal-soft:#23424A; --blue:#93C3F0; --blue-soft:#26435D;
+  color-scheme:dark;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:"Spectral",Georgia,"Times New Roman",serif;font-size:17px;line-height:1.65}
-.wrap{max-width:1180px;margin:0 auto;padding:2.25rem 1.25rem 4rem}
-header h1{font-family:"Cinzel",Georgia,serif;font-weight:600;font-size:clamp(1.6rem,3.6vw,2.5rem);line-height:1.15;letter-spacing:.02em;margin:0 0 .5rem}
-header p{margin:0 0 1.75rem;color:var(--muted);max-width:62ch}
-nav.views{display:flex;flex-wrap:wrap;gap:.25rem;margin:1.6rem 0 1.8rem;border-bottom:1px solid var(--rule)}
-nav.views button{font:inherit;font-size:.95rem;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:.55rem .8rem;cursor:pointer;margin-bottom:-1px}
-nav.views button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold);font-weight:500}
-button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
-.layout{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:2.5rem;align-items:start}
-@media (max-width:900px){.layout{grid-template-columns:1fr;gap:1.5rem}}
-.era{position:relative;padding-left:1.4rem;margin-bottom:1.1rem}
-.era::before{content:"";position:absolute;left:5px;top:.4rem;bottom:0;width:2px;background:var(--rule)}
-.era-head{display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;margin-bottom:.35rem}
-.era-name{font-family:"Cinzel",Georgia,serif;font-weight:500;font-size:.98rem;letter-spacing:.03em}
-.era-span{font-size:.85rem;color:var(--muted);font-style:italic;white-space:nowrap}
-.ev{display:grid;grid-template-columns:auto 1fr;gap:.7rem;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-radius:6px;padding:.5rem .6rem;cursor:pointer;position:relative;margin-left:-.6rem}
-.ev:hover{background:var(--sel)}
-.ev[aria-current="true"]{background:var(--sel)}
-.dot{width:14px;height:14px;border-radius:50%;margin-top:.35rem;border:2px solid var(--surface);box-shadow:0 0 0 1.5px var(--c);background:var(--c);position:relative;left:-1.47rem;margin-right:-1.47rem}
-.ev[data-cat="event"]{--c:var(--gold)} .ev[data-cat="tribulation"]{--c:var(--wine)} .ev[data-cat="judgment"]{--c:var(--teal)}
-.ev[data-cat="judgment"] .dot{border-radius:2px;transform:rotate(45deg)}
-.ev[data-cat="tribulation"] .dot{border-radius:2px}
-.ev-t{font-weight:500;line-height:1.3;display:block}
-.ev-r{font-size:.82rem;color:var(--muted);display:block;margin-top:.15rem;line-height:1.4}
-.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:var(--muted);margin:.5rem 0 0 0;padding-left:1.4rem}
-.legend span{display:inline-flex;align-items:center;gap:.4rem}
-.lg{width:11px;height:11px;display:inline-block}
-.panel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:1.75rem clamp(1.1rem,3vw,2.25rem) 2rem;position:sticky;top:calc(env(safe-area-inset-top,0px) + 1rem);max-height:calc(100vh - 2rem);overflow-y:auto}
-@media (max-width:900px){.panel{position:static;max-height:none}}
-.kicker{font-size:.9rem;color:var(--muted);margin:0 0 .3rem}
-.kicker b{font-weight:500;color:var(--c)}
-.panel h2,.hpanel h2{font-family:"Cinzel",Georgia,serif;font-weight:600;font-size:clamp(1.35rem,2.6vw,1.8rem);line-height:1.2;margin:0 0 .75rem;letter-spacing:.01em}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"EB Garamond",Garamond,Georgia,"Times New Roman",serif;font-size:17px;font-size-adjust:.45;line-height:1.65;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.wrap{max-width:1560px;margin:0 auto;padding:2.25rem clamp(1rem,3vw,1.5rem) 4rem}
+header h1{font-weight:600;font-size:clamp(1.6rem,3.6vw,2.5rem);line-height:1.15;margin:0 0 .5rem}
+header p{margin:0;color:var(--muted);max-width:64ch}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+[tabindex="-1"]:focus{outline:none}
+.muted{color:var(--muted)}
+
+/* tabs */
+nav.views{display:flex;gap:.25rem;margin:1.4rem 0 1.25rem;border-bottom:1px solid var(--rule)}
+nav.views a{color:var(--muted);text-decoration:none;font-size:.98rem;padding:.55rem .85rem;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.views a:hover{color:var(--ink)}
+nav.views a[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold);font-weight:500}
+
+/* keys */
+.key{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem 1.4rem;font-size:.9rem;color:var(--muted);margin:0 0 .9rem}
+.k{display:inline-flex;align-items:flex-start;gap:.5rem}
+.sw{display:inline-block;flex:none;margin-top:.3em}
+.sw-chrono,.sw-paren,.sw-frame,.sw-later{width:22px;height:16px;border-radius:4px;box-shadow:inset 0 0 0 1px var(--rule)}
+.sw-chrono,.sw-later{background:var(--blue-soft)}
+.sw-later{opacity:.45}
+.sw-paren{background:repeating-linear-gradient(135deg,var(--blue-soft) 0 4px,var(--surface) 4px 8px)}
+.sw-frame{background:var(--gold-soft)}
+
+/* timeline rail: horizontal on wider screens */
+.rail{display:grid;grid-template-rows:auto auto;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:.3rem;margin:0 0 .4rem}
+.era{grid-row:1 / span 2;display:grid;grid-template-columns:subgrid;grid-template-rows:subgrid;border-left:1px dashed var(--rule)}
+.era:first-child,.era[data-band],.era[data-band]+.era{border-left-color:transparent}
+.era[data-band="week"]{background:var(--wine-soft);border-radius:10px}
+.era-head{grid-row:1;grid-column:1 / -1;min-width:0;padding:.6rem .5rem .45rem;line-height:1.25}
+.era-name{display:block;font-weight:600;font-size:.95rem}
+.era-span{display:block;font-size:.8rem;color:var(--muted);font-style:italic}
+.track{grid-row:2;grid-column:1 / -1;display:grid;grid-template-columns:subgrid}
+.node{--c:var(--gold);--halo:var(--paper);display:flex;flex-direction:column;align-items:center;gap:.15rem;min-width:0;padding:0 2px .75rem;border:0;border-radius:8px;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.node[data-c="wine"]{--c:var(--wine);--halo:var(--wine-soft)}
+.node[data-c="teal"]{--c:var(--teal)}
+.node:hover,.node[aria-current="true"]{background:var(--sel);--halo:var(--sel)}
+.node[data-c="wine"]:hover,.node[data-c="wine"][aria-current="true"]{background:var(--wine-sel);--halo:var(--wine-sel)}
+.mark{position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center;height:24px;margin:0 -2px}
+.mark::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:var(--rule)}
+.era:first-child .node:first-child .mark::before{left:50%}
+.era:last-child .node:last-child .mark::before{right:50%}
+.dot{position:relative;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--halo),0 0 0 4.5px var(--c)}
+.node[data-kind="judgment"] .dot{width:11px;height:11px;border-radius:2px;transform:rotate(45deg)}
+.node[aria-current="true"] .dot{width:15px;height:15px}
+.num{font-size:.74rem;line-height:1.2;color:var(--muted)}
+.t{max-width:100%;font-size:.78rem;font-weight:500;line-height:1.25;overflow-wrap:break-word}
+.hint{font-size:.85rem;color:var(--muted);margin:0 0 1rem}
+.to-rail{display:none;font:inherit;font-size:.85rem;color:var(--muted);background:none;border:1px solid var(--rule);border-radius:999px;padding:.05rem .65rem;cursor:pointer;margin-left:auto}
+
+/* timeline rail: vertical on phones */
+@media (max-width:700px){
+  .rail{display:block;position:relative;overflow:visible;padding:0;margin:0 0 1.25rem}
+  .rail::before{content:"";position:absolute;left:21px;top:1.25rem;bottom:1.25rem;width:2px;background:var(--rule)}
+  .era{display:block;border:0;border-radius:10px;padding:.1rem 0 .35rem}
+  .era-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .6rem;padding:.55rem .5rem .1rem 44px}
+  .track{display:block}
+  .node{display:grid;grid-template-columns:44px 1.7rem minmax(0,1fr);align-items:center;width:100%;gap:0;padding:.5rem .6rem .5rem 0;text-align:left}
+  .mark{height:auto;margin:0}
+  .mark::before{display:none}
+  .num{font-size:.85rem}
+  .t{font-size:1rem}
+  .to-rail{display:inline-block}
+}
+
+/* notes panels */
+.hpanel{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:1.75rem clamp(1.1rem,3vw,2.5rem) 2rem;max-width:980px}
+.kicker{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .75rem;font-size:.9rem;color:var(--muted);margin:0 0 .3rem}
+.kicker b{font-weight:600;color:var(--c)}
+.panel-inner h2{font-weight:600;font-size:clamp(1.35rem,2.6vw,1.8rem);line-height:1.2;margin:0 0 .75rem}
 .lead{font-size:1.08rem;margin:0 0 1rem;max-width:68ch}
-.refs{font-size:.9rem;color:var(--muted);border-left:3px solid var(--c);padding:.35rem 0 .35rem .8rem;margin:0 0 1.4rem;background:var(--soft);border-radius:0}
+.refs{font-size:.9rem;color:var(--muted);border-left:3px solid var(--c);background:var(--soft);padding:.35rem 0 .35rem .8rem;margin:0 0 1rem}
+.xref{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;font-size:.88rem;color:var(--muted);margin:0 0 1.4rem}
+.xref > span{margin-right:.15rem}
+.evlink{color:var(--ink);text-decoration:none;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:.1rem .7rem}
+.evlink:hover{background:var(--sel)}
 .body{max-width:72ch}
 .body h3{font-size:1.08rem;font-weight:600;margin:1.7rem 0 .45rem;padding-top:1rem;border-top:1px solid var(--rule)}
 .body h3:first-child{border-top:0;padding-top:0;margin-top:0}
@@ -73,133 +136,1027 @@ th,td{text-align:left;vertical-align:top;padding:.55rem .75rem;border-bottom:1px
 th{background:var(--paper);font-weight:600}
 tr:last-child td{border-bottom:0}
 td:first-child{font-weight:500}
+table.rowhead td:first-child{white-space:nowrap}
 .pager{display:flex;justify-content:space-between;gap:1rem;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--rule)}
-.pager button{font:inherit;font-size:.92rem;background:none;border:1px solid var(--rule);color:var(--ink);border-radius:6px;padding:.45rem .8rem;cursor:pointer;max-width:48%;text-align:left}
-.pager button:hover{background:var(--sel)}
-.pager button[disabled]{visibility:hidden}
-.notion{display:inline-block;margin-top:1rem;font-size:.9rem;color:var(--muted)}
-.notion a{color:var(--ink)}
-.ref-view{max-width:900px}
-.ref-view .body{max-width:none}
-.ref-view h2{font-family:"Cinzel",Georgia,serif;font-weight:600;font-size:1.6rem;margin:0 0 1rem}
+.pager a{display:block;max-width:48%;color:var(--ink);text-decoration:none;border:1px solid var(--rule);border-radius:8px;padding:.45rem .8rem;font-size:.92rem;line-height:1.35}
+.pager a small{display:block;font-size:.75rem;color:var(--muted)}
+.pager a.next{margin-left:auto;text-align:right}
+.pager a:hover{background:var(--sel)}
 
-.htl-wrap{position:relative;margin:0 0 1.75rem}
-.htl{display:flex;overflow-x:auto;padding:.25rem 0 1rem;scroll-snap-type:x proximity;scrollbar-width:thin}
-.hera{flex:0 0 auto;display:flex;flex-direction:column;border-left:1px dashed var(--rule)}
-.hera:first-child{border-left:0}
-.hera-head{padding:0 .4rem .7rem;line-height:1.3}
-.hera-head .era-name{display:block}
-.hera-head .era-span{display:block;white-space:normal}
-.hera-track{display:flex;flex:1}
-.hnode{flex:1 0 110px;width:110px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 6px 10px;background:none;border:0;border-radius:8px;font:inherit;color:inherit;cursor:pointer;position:relative;scroll-snap-align:center}
-.hnode{--halo:var(--paper);margin:0}
-.hnode:hover,.hnode[aria-current="true"]{background:var(--sel);--halo:var(--sel)}
-.hnode{border-radius:0}
-.hrail{display:flex;align-items:center;justify-content:center;width:calc(100% + 12px);margin:0 -6px .3rem;height:20px;background:linear-gradient(var(--rule),var(--rule)) center/100% 2px no-repeat}
-.hdot{display:block;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--halo),0 0 0 5px var(--c)}
-.hnode[data-cat="tribulation"] .hdot{border-radius:2px}
-.hnode[data-cat="judgment"] .hdot{border-radius:2px;transform:rotate(45deg)}
-.hnode[aria-current="true"] .hdot{width:14px;height:14px}
-.hnode[data-cat="event"]{--c:var(--gold)} .hnode[data-cat="tribulation"]{--c:var(--wine)} .hnode[data-cat="judgment"]{--c:var(--teal)}
-.hnode[data-cat="tribulation"] .hnode[data-cat="judgment"] .hnode[aria-current="true"] .hn{font-size:.78rem;color:var(--muted);line-height:1.2}
-.ht{font-size:.9rem;line-height:1.3;font-weight:500;margin-top:.1rem}
-.hint{font-size:.85rem;color:var(--muted);margin:.25rem 0 0;display:none}
-.hint{display:block}
-.hpanel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:1.75rem clamp(1.1rem,3vw,2.5rem) 2rem;max-width:980px}
+/* tables become cards on phones */
+@media (max-width:600px){
+  .tbl{border:0;border-radius:0;overflow:visible}
+  .tbl table,.tbl tbody,.tbl tr,.tbl td{display:block;width:auto}
+  .tbl tr.head{display:none}
+  .tbl tr{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:.55rem .8rem;margin:.55rem 0}
+  .tbl td{border:0;padding:.2rem 0}
+  .tbl td[data-label]::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:500;letter-spacing:.02em;color:var(--muted)}
+  .tbl table.rowhead td:first-child{white-space:normal;font-weight:600;font-size:1rem;padding-bottom:.3rem;border-bottom:1px solid var(--rule);margin-bottom:.2rem}
+}
+
+/* Reading Revelation */
+.outline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;margin:1rem 0 1.2rem}
+.outline div{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:.65rem .85rem;line-height:1.35}
+.outline b{display:block;font-weight:600}
+.outline span{font-size:.9rem;color:var(--muted)}
+@media (max-width:600px){.outline{grid-template-columns:1fr}}
+.chmap{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 .8rem}
+.chip{position:relative;display:inline-grid;place-items:center;min-width:42px;height:42px;padding:0 .35rem;overflow:hidden;border:1px solid var(--rule);border-radius:9px;color:var(--ink);text-decoration:none;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.chip .segs{position:absolute;inset:0;display:flex}
+.chip .segs i{flex:1}
+.chip .cn{position:relative}
+.seg-chrono{background:var(--blue-soft)}
+.seg-paren{background:repeating-linear-gradient(135deg,var(--blue-soft) 0 4px,var(--surface) 4px 8px)}
+.seg-prologue,.seg-letters,.seg-epilogue{background:var(--gold-soft)}
+.chip.later{opacity:.45}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-current="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.chip.start{padding:0 .9rem;background:var(--surface);font-weight:500;font-size:.92rem}
+.chip.small{min-width:30px;height:28px;border-radius:7px;font-size:.82rem}
+
 footer{margin-top:3rem;font-size:.85rem;color:var(--muted);max-width:70ch}
+footer p{margin:.4rem 0}
 @media (prefers-reduced-motion:no-preference){.panel-inner{animation:fade .25s ease}@keyframes fade{from{opacity:0}to{opacity:1}}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>From the first coming to New Jerusalem</h1>
-  <p>Study notes on the end-times timeline as read by post-tribulation premillennialism. Choose any event to read the explanation, verses and tables.</p>
+  <h1>Revelation Timeline</h1>
+  <p>Study notes on the end-times timeline as read by post-tribulation premillennialism. Follow the timeline event by event, or read through Revelation chapter by chapter.</p>
 </header>
-
+<nav class="views" role="tablist" aria-label="Views"></nav>
 <main id="main"></main>
-<footer>Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved.</footer>
+<footer>
+  <p>Includes notes from Jamie's weekly Revelation class.</p>
+  <p>Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved.</p>
+</footer>
 </div>
+
+<!-- ============ TIMELINE CONTENT ============ -->
+<template id="timeline-content">
+  <div class="era" data-name="First coming" data-span="1st century AD">
+    <section data-id="e01">
+      <h2>First coming</h2>
+      <p class="summary">Christ's birth, ministry, death, resurrection and ascension fulfil the first-coming prophecies and set up everything that follows.</p>
+      <p class="refs">Isa 53; Dan 9:25–26; 1 Cor 15:3–4; Acts 1:9–11</p>
+      <h3>What happened</h3>
+      <ul>
+        <li><strong>Birth:</strong> born of a virgin in Bethlehem (Isaiah 7:14; Micah 5:2; Matthew 1–2; Luke 2).</li>
+        <li><strong>Ministry:</strong> He announced that the kingdom of God was at hand (Mark 1:14–15) and showed its power in His miracles (Matthew 12:28).</li>
+        <li><strong>Death:</strong> He died as the atoning sacrifice for sin (Isaiah 53; 1 Corinthians 15:3–4).</li>
+        <li><strong>Resurrection:</strong> He rose as the "firstfruits" of the resurrection (1 Corinthians 15:20–23).</li>
+        <li><strong>Ascension:</strong> He ascended, with the angels promising that "this Jesus… will come in the same way" (Acts 1:9–11).</li>
+      </ul>
+      <h3>Why it matters for the timeline</h3>
+      <p>Daniel's prophecy counts 69 "weeks" of years up to the Messiah, who is then "cut off" (Daniel 9:25–26). Premillennialists see a gap after that point: the 70th week is still future.</p>
+      <p>The resurrection order also starts here: "Christ the firstfruits, then at his coming those who belong to Christ. Then comes the end" (1 Corinthians 15:23–24). Each later resurrection on this timeline follows that order.</p>
+      <p>The kingdom is already present in a spiritual sense (Colossians 1:13), but its full, visible form waits for His return. In the parable of the minas, a nobleman goes away to receive a kingdom and then returns to rule (Luke 19:11–27).</p>
+      <h3>Prophecies split across two comings</h3>
+      <div class="tbl"><table>
+        <tr><th>Fulfilled at the first coming</th><th>Awaiting the second coming</th></tr>
+        <tr><td>"For to us a child is born" (Isaiah 9:6a)</td><td>"The government shall be upon his shoulder" (Isaiah 9:6b–7)</td></tr>
+        <tr><td>"The year of the Lord's favor" (Isaiah 61:1–2a). Jesus stopped reading mid-verse (Luke 4:18–21)</td><td>"The day of vengeance of our God" (Isaiah 61:2b)</td></tr>
+        <tr><td>Lowly, riding on a donkey (Zechariah 9:9)</td><td>His feet stand on the Mount of Olives (Zechariah 14:4)</td></tr>
+        <tr><td>Messiah "cut off" (Daniel 9:26)</td><td>The Son of Man given everlasting dominion (Daniel 7:13–14)</td></tr>
+      </table></div>
+    </section>
+  </div>
+  <div class="era" data-name="Church age" data-span="about 2,000 years so far">
+    <section data-id="e02">
+      <h2>Church age</h2>
+      <p class="summary">The present age between Pentecost and the 70th week: the gospel goes to the nations, Israel is partly hardened, and the "birth pains" build.</p>
+      <p class="refs">Acts 2; Matt 24:4–14; Rom 11:25; 1 Thess 5:1–6</p>
+      <h3>What defines this age</h3>
+      <ul>
+        <li><strong>The church is born</strong> at Pentecost (Acts 2; Matthew 16:18).</li>
+        <li><strong>The mission:</strong> the gospel goes to every nation, "and then the end will come" (Matthew 24:14; 28:18–20; Acts 1:8).</li>
+        <li><strong>Israel:</strong> "a partial hardening has come upon Israel, until the fullness of the Gentiles has come in" (Romans 11:25). Jerusalem is "trampled underfoot by the Gentiles, until the times of the Gentiles are fulfilled" (Luke 21:24).</li>
+        <li><strong>Birth pains:</strong> false christs, wars, famines and earthquakes. These are "but the beginning of the birth pains", and "the end is not yet" (Matthew 24:4–8).</li>
+        <li><strong>Apostasy:</strong> the "rebellion comes first" (2 Thessalonians 2:3; 1 Timothy 4:1; 2 Timothy 3:1–5).</li>
+      </ul>
+      <h3>The post-trib emphasis: watch and endure</h3>
+      <p>In this view, the church is told to watch and endure, not to expect removal before the trouble (Matthew 24:13, 42–44). Paul tells believers the day of the Lord will not "surprise you like a thief". The reason is that they are awake and watching, not that they are absent (1 Thessalonians 5:1–6).</p>
+      <h3>Jesus' signs and the seals of Revelation 6</h3>
+      <p>Many interpreters see Revelation 6 following the same order as Jesus' Olivet Discourse. Post-tribulationists differ on whether the seals begin before or inside the 70th week. Jamie places the first seal at the midpoint: its rider, who "came out conquering, and to conquer" (Revelation 6:2), is the Antichrist, who is given 42 months (Revelation 13:5). So the seals begin the Great Tribulation.</p>
+      <div class="tbl"><table>
+        <tr><th>Olivet Discourse (Matthew 24)</th><th>Seal (Revelation 6)</th></tr>
+        <tr><td>False christs (24:5)</td><td>1st seal: white horse, a conqueror (6:1–2)</td></tr>
+        <tr><td>Wars (24:6–7)</td><td>2nd seal: red horse, peace taken (6:3–4)</td></tr>
+        <tr><td>Famines (24:7)</td><td>3rd seal: black horse, scarcity (6:5–6)</td></tr>
+        <tr><td>Pestilence, death (Luke 21:11)</td><td>4th seal: pale horse, death (6:7–8)</td></tr>
+        <tr><td>Persecution, martyrdom (24:9)</td><td>5th seal: souls of martyrs (6:9–11)</td></tr>
+        <tr><td>Sun darkened, stars fall (24:29)</td><td>6th seal: cosmic upheaval (6:12–17)</td></tr>
+      </table></div>
+    </section>
+  </div>
+  <div class="era" data-name="70th week" data-span="7 years" data-band="week">
+    <section data-id="e03">
+      <h2>70th week begins</h2>
+      <p class="summary">The final seven years of Daniel's prophecy begin with "a strong covenant with many".</p>
+      <p class="refs">Dan 9:24–27; Dan 7:24–25; 2 Thess 2:3–4; Rev 13:1–8</p>
+      <h3>Daniel's seventy weeks</h3>
+      <p>Daniel 9:24–27 decrees seventy "weeks", meaning seventy sevens of years, for Israel and Jerusalem.</p>
+      <div class="tbl"><table>
+        <tr><th>Period</th><th>Length</th><th>What it covers</th></tr>
+        <tr><td>7 weeks</td><td>49 years</td><td>Jerusalem rebuilt "in a troubled time" (9:25)</td></tr>
+        <tr><td>62 weeks</td><td>434 years</td><td>Up to the Messiah, who is then "cut off" (9:25–26)</td></tr>
+        <tr><td>Gap</td><td>Church age</td><td>City and sanctuary destroyed (AD 70); wars continue (9:26)</td></tr>
+        <tr><td>1 week</td><td>7 years</td><td>Covenant confirmed, sacrifice stopped at the midpoint, ending in judgment (9:27)</td></tr>
+      </table></div>
+      <p>The 70 weeks aim to finish transgression, end sins, make reconciliation, bring everlasting righteousness, seal up the vision, and anoint the most holy (9:24). Premillennialists note these are not yet fully true for Israel, so the final week must still be future.</p>
+      <h3>Who makes the covenant?</h3>
+      <p>Daniel 9:27 says "he shall make a strong covenant with many for one week". There are two main readings, and the rest of the timeline is the same under either one.</p>
+      <div class="tbl"><table>
+        <tr><th></th><th>Popular view</th><th>Jamie's view</th></tr>
+        <tr><td>Who makes it</td><td>The Antichrist</td><td>God</td></tr>
+        <tr><td>What it is</td><td>A new seven-year treaty, often pictured as a peace deal</td><td>The covenant God already made with Israel at Horeb (Malachi 4:4), strengthened</td></tr>
+        <tr><td>Why</td><td>"He" points back to "the prince who is to come" (9:26), whose people destroyed the city (Rome, AD 70)</td><td>Everywhere else in Daniel, "covenant" means God's covenant with His people (9:4; 11:28–32)</td></tr>
+        <tr><td>At the midpoint</td><td>He breaks it and sets up the abomination</td><td>The Antichrist sets up the abomination</td></tr>
+      </table></div>
+      <p>In Jamie's view, God restores Israel's temple and priesthood, not as a way to be saved but as a "guardian" that leads them to Christ (Galatians 3:24).</p>
+      <p>Both views agree the Antichrist sets up the abomination. He appears throughout Scripture:</p>
+      <ul>
+        <li><strong>Daniel:</strong> the little horn (Daniel 7:8, 24–25) and the willful king (Daniel 11:36–45).</li>
+        <li><strong>Paul:</strong> the man of lawlessness (2 Thessalonians 2:3–4).</li>
+        <li><strong>Revelation:</strong> the beast from the sea (Revelation 13:1–8).</li>
+        <li><strong>John:</strong> the antichrist (1 John 2:18).</li>
+      </ul>
+      <h3>Other features</h3>
+      <ul>
+        <li>Temple worship is functioning, since sacrifice is stopped at the midpoint (Daniel 9:27; Revelation 11:1–2).</li>
+        <li>The two witnesses prophesy 1,260 days (Revelation 11:3–6). Interpreters debate whether that is the first or second half.</li>
+      </ul>
+      <h3>Post-trib notes</h3>
+      <p>The church is present on earth. The start of the week may not be obvious when it happens. The sign Jesus told believers to watch for is the abomination at the midpoint (Matthew 24:15).</p>
+    </section>
+    <section data-id="e04">
+      <h2>Abomination of desolation</h2>
+      <p class="summary">At the midpoint, the ruler stops the sacrifice and sets up an idolatrous desecration in the holy place. Jesus named it as THE sign to flee.</p>
+      <p class="refs">Dan 9:27; 11:31; 12:11; Matt 24:15–22; 2 Thess 2:3–4; Rev 13:14–15</p>
+      <h3>The key texts</h3>
+      <ul>
+        <li><strong>Daniel:</strong> sacrifice stopped mid-week (9:27); the abomination set up (11:31; 12:11).</li>
+        <li><strong>Jesus:</strong> "When you see the abomination of desolation… standing in the holy place… then let those who are in Judea flee to the mountains" (Matthew 24:15–22; Mark 13:14–20). A "great tribulation" follows, "such as has not been from the beginning of the world until now", and those days are shortened for the elect's sake.</li>
+        <li><strong>Paul:</strong> the man of lawlessness "takes his seat in the temple of God, proclaiming himself to be God". The day of Christ will not come until this happens (2 Thessalonians 2:3–4).</li>
+        <li><strong>Revelation:</strong> an image of the beast that speaks; worship and the mark are enforced (Revelation 13:14–18).</li>
+      </ul>
+      <h3>Past patterns and the final fulfilment</h3>
+      <ul>
+        <li><strong>Antiochus IV Epiphanes (167 BC)</strong> set up an altar to Zeus in the temple and sacrificed swine on it. This is the pattern behind Daniel 11:31.</li>
+        <li><strong>AD 70:</strong> Jerusalem was surrounded by armies and the temple destroyed (Luke 21:20). This was a partial fulfilment.</li>
+        <li><strong>Still future:</strong> Jesus spoke of the abomination as future even after Antiochus.</li>
+      </ul>
+      <h3>The numbers Daniel gives</h3>
+      <div class="tbl"><table>
+        <tr><th>Number</th><th>Text</th><th>Common reading</th></tr>
+        <tr><td>1,260 days, 42 months, "time, times and half a time"</td><td>Daniel 7:25; 12:7; Revelation 11:2–3; 12:6, 14; 13:5</td><td>The second half of the week: the Great Tribulation</td></tr>
+        <tr><td>1,290 days</td><td>Daniel 12:11</td><td>From the abomination; 30 extra days, often linked to judgments after the return. Jamie: from Christ's appearing to the end of Armageddon</td></tr>
+        <tr><td>1,335 days</td><td>Daniel 12:12</td><td>"Blessed is he who waits"; 45 more days, often linked to the kingdom being set up. Jamie: the nations judged and rewards given, ending with the marriage supper</td></tr>
+      </table></div>
+      <h3>Why it matters in the post-trib view</h3>
+      <p>This is the visible marker. Paul ties "our being gathered together to him" to the time after the man of lawlessness is revealed (2 Thessalonians 2:1–4). So the church sees this event before the rapture.</p>
+    </section>
+    <section data-id="e05">
+      <h2>Great Tribulation</h2>
+      <p class="summary">The final 3½ years: unequalled distress, the beast's war on the saints, and God's judgments poured out on the world.</p>
+      <p class="refs">Matt 24:21–29; Dan 12:1; Rev 12–18; Jer 30:7</p>
+      <h3>Length and character</h3>
+      <ul>
+        <li><strong>Length:</strong> 42 months, or 1,260 days (Revelation 13:5; 12:6).</li>
+        <li><strong>Severity:</strong> a time of trouble "such as never has been" (Daniel 12:1; Matthew 24:21).</li>
+        <li><strong>Israel:</strong> it is "a time of distress for Jacob; yet he shall be saved out of it" (Jeremiah 30:7). Israel is refined (Zechariah 13:8–9), and the woman is protected in the wilderness (Revelation 12:6, 14).</li>
+      </ul>
+      <h3>Two kinds of wrath (the key post-trib distinction)</h3>
+      <div class="tbl"><table>
+        <tr><th></th><th>Wrath of Satan and the beast</th><th>Wrath of God</th></tr>
+        <tr><td>Aimed at</td><td>The saints (Revelation 12:12, 17; 13:7; Daniel 7:21, 25)</td><td>The ungodly who take the mark (Revelation 14:9–11; 16:2)</td></tr>
+        <tr><td>Believers' experience</td><td>Persecution and martyrdom (Revelation 13:10; 14:12–13; 20:4)</td><td>Protected from it; God "has not destined us for wrath" (1 Thessalonians 5:9)</td></tr>
+      </table></div>
+      <p>Post-tribulationists argue God protects His people <em>through</em> His judgments, not by removing them:</p>
+      <ul>
+        <li>Israel in Goshen was spared the plagues (Exodus 8:22–23; 9:26).</li>
+        <li>God's servants are sealed and not harmed (Revelation 7:3; 9:4).</li>
+        <li>"I will keep you from the hour of trial" (Revelation 3:10) uses the same phrase as John 17:15: "I do not ask that you take them out of the world, but that you keep them from the evil one."</li>
+      </ul>
+      <h3>The judgments</h3>
+      <div class="tbl"><table>
+        <tr><th>Series</th><th>Texts</th><th>Summary</th></tr>
+        <tr><td>Seven seals</td><td>Revelation 6; 8:1</td><td>Conquest, war, famine, death, martyrs, cosmic upheaval</td></tr>
+        <tr><td>Seven trumpets</td><td>Revelation 8–9; 11:15–19</td><td>A third of creation struck; demonic plagues; the 7th trumpet announces the kingdom</td></tr>
+        <tr><td>Seven bowls</td><td>Revelation 16</td><td>Final, complete judgments on the beast's kingdom</td></tr>
+        <tr><td>Fall of Babylon</td><td>Revelation 17–18</td><td>The world system of commerce and false religion destroyed</td></tr>
+      </table></div>
+      <h3>Who are "the elect"?</h3>
+      <p>The elect are present in the tribulation (Matthew 24:22, 24, 31), and saints are overcome by the beast (Revelation 13:7). Post-tribulationists read both as the church.</p>
+      <h3>How it ends</h3>
+      <p>"Immediately after the tribulation of those days", the sun and moon are darkened (Matthew 24:29; Joel 2:31; Revelation 6:12–17). Then the sign of the Son of Man appears.</p>
+    </section>
+  </div>
+  <div class="era" data-name="At His return" data-span="in quick succession">
+    <section data-id="e06">
+      <h2>Second coming and rapture</h2>
+      <p class="summary">One event: Christ returns visibly after the tribulation. The dead in Christ rise, living believers are changed and caught up to meet Him, and they return with Him to earth.</p>
+      <p class="refs">Matt 24:29–31; 1 Thess 4:13–18; 1 Cor 15:51–52; 2 Thess 1:7–10; Rev 19:11–16</p>
+      <h3>The return</h3>
+      <ul>
+        <li>Every eye will see Him (Revelation 1:7; Matthew 24:30).</li>
+        <li>He comes in the same way He left (Acts 1:11).</li>
+        <li>His feet stand on the Mount of Olives (Zechariah 14:4).</li>
+        <li>He rides a white horse as King of kings (Revelation 19:11–16).</li>
+        <li>The same "day" brings rest to believers and vengeance on the disobedient (2 Thessalonians 1:6–10).</li>
+      </ul>
+      <h3>The rapture</h3>
+      <ul>
+        <li>"The Lord himself will descend from heaven… with the sound of the trumpet of God. And the dead in Christ will rise first. Then we who are alive… will be caught up together with them in the clouds to meet the Lord in the air" (1 Thessalonians 4:16–17).</li>
+        <li>"At the last trumpet… the dead will be raised imperishable, and we shall be changed" (1 Corinthians 15:51–52).</li>
+        <li>Believers receive bodies like His glorious body (Philippians 3:20–21; 1 John 3:2).</li>
+      </ul>
+      <h3>Why post-tribulationists see one event</h3>
+      <div class="tbl"><table>
+        <tr><th>Argument</th><th>Texts</th></tr>
+        <tr><td>The gathering comes "immediately after the tribulation"</td><td>Matthew 24:29–31</td></tr>
+        <tr><td>The "last trumpet" is the trumpet of the return</td><td>1 Corinthians 15:52; Matthew 24:31; Revelation 11:15</td></tr>
+        <tr><td>The gathering comes after the man of lawlessness is revealed</td><td>2 Thessalonians 2:1–4</td></tr>
+        <tr><td>The same words describe the coming the church waits for: parousia, apokalypsis, epiphaneia</td><td>1 Thessalonians 4:15; 2 Thessalonians 2:8; 1 Corinthians 1:7; Titus 2:13</td></tr>
+        <tr><td>The "first resurrection" includes tribulation martyrs, so the resurrection of believers comes after the tribulation</td><td>Revelation 20:4–6</td></tr>
+        <tr><td>"Meet" (apantēsis) means going out to welcome an arriving dignitary and escorting him back</td><td>Acts 28:15; Matthew 25:6</td></tr>
+      </table></div>
+      <h3>Israel's repentance</h3>
+      <p>Israel looks on Him "whom they have pierced" and mourns (Zechariah 12:10). "All Israel will be saved, as it is written, 'The Deliverer will come from Zion'" (Romans 11:26). Jesus said Jerusalem would not see Him again until it says, "Blessed is he who comes in the name of the Lord" (Matthew 23:39).</p>
+      <h3>Main objections and post-trib replies</h3>
+      <ul>
+        <li><strong>Imminence ("concerning that day and hour no one knows"):</strong> the post-trib reply is that the command is to watch for signs (Matthew 24:32–44). Many teachers add that the day stays unknown. Jamie reads it as unknown when Jesus spoke: once the abomination is set up, Daniel counts the days (Daniel 12:11–12), much as God told Noah "in seven days" (Genesis 7:4). The warning "you will not know at what hour" is for those who do not wake up (Revelation 3:3).</li>
+        <li><strong>Revelation 3:10 ("I will keep you from the hour of trial"):</strong> the reply is that this means protection through it, as in John 17:15.</li>
+        <li><strong>The word "church" is absent in Revelation 4–18:</strong> the reply is that "saints", "servants" and "brethren" are there throughout.</li>
+      </ul>
+    </section>
+    <section data-id="e07">
+      <h2>Battle of Armageddon</h2>
+      <p class="summary">The armies gathered by the beast against Christ are destroyed at His coming. The beast and false prophet are thrown alive into the lake of fire.</p>
+      <p class="refs">Rev 16:12–16; 19:11–21; Zech 14:1–5; Joel 3:9–16; 2 Thess 2:8</p>
+      <h3>The gathering</h3>
+      <ul>
+        <li>The Euphrates dries up, and demonic spirits gather the kings of the world to "the place that in Hebrew is called Armageddon" (Revelation 16:12–16). Har-Megiddo means "mountain of Megiddo", above the Jezreel Valley.</li>
+        <li>The nations gather against Jerusalem (Zechariah 12:2–9; 14:1–3) and in the "Valley of Jehoshaphat" (Joel 3:2, 9–16).</li>
+      </ul>
+      <h3>The battle</h3>
+      <ul>
+        <li>Christ comes with the armies of heaven. His robe is dipped in blood, and a sharp sword comes from His mouth (Revelation 19:11–16).</li>
+        <li>Those with Him are "called and chosen and faithful" (Revelation 17:14; Jude 14; Zechariah 14:5). In the post-trib view, the just-raptured saints are part of this army.</li>
+        <li>The lawless one is killed "with the breath of his mouth" and brought "to nothing by the appearance of his coming" (2 Thessalonians 2:8).</li>
+        <li>The beast and false prophet are cast alive into the lake of fire. The rest are slain, and birds gather for "the great supper of God" (Revelation 19:17–21). This is a grim contrast to the marriage supper.</li>
+        <li>The winepress of God's wrath (Isaiah 63:1–6; Revelation 14:19–20).</li>
+      </ul>
+      <h3>Places named</h3>
+      <div class="tbl"><table>
+        <tr><th>Place</th><th>Text</th><th>Role</th></tr>
+        <tr><td>Armageddon (Megiddo)</td><td>Revelation 16:16</td><td>Where the armies assemble</td></tr>
+        <tr><td>Valley of Jehoshaphat</td><td>Joel 3:2, 12</td><td>Where God judges the nations</td></tr>
+        <tr><td>Jerusalem</td><td>Zechariah 12:2–9; 14:2</td><td>The city under siege</td></tr>
+        <tr><td>Bozrah, Edom</td><td>Isaiah 63:1</td><td>The Lord comes from here with garments stained red</td></tr>
+        <tr><td>Mount of Olives</td><td>Zechariah 14:4</td><td>Where His feet touch down</td></tr>
+      </table></div>
+    </section>
+    <section data-id="e08" data-kind="judgment">
+      <h2>Judgment seat of Christ</h2>
+      <p class="summary">Believers stand before Christ to have their lives evaluated. This decides rewards, not salvation.</p>
+      <p class="refs">2 Cor 5:9–10; Rom 14:10–12; 1 Cor 3:10–15; 1 Cor 4:5; Rev 22:12</p>
+      <h3>The name</h3>
+      <p>"Judgment seat" translates the Greek <em>bēma</em>, a raised platform where an official sat to give rulings. Paul was brought before Gallio's bēma in Corinth (Acts 18:12–17). The word also brings to mind the platform at the athletic games where prizes were awarded (1 Corinthians 9:24–27).</p>
+      <h3>Key passages</h3>
+      <ul>
+        <li>"We must all appear before the judgment seat of Christ, so that each one may receive what is due for what he has done in the body, whether good or evil" (2 Corinthians 5:9–10).</li>
+        <li>"We will all stand before the judgment seat of God… each of us will give an account of himself to God" (Romans 14:10–12). It is the same seat: the Father "has given all judgment to the Son" (John 5:22).</li>
+        <li>The test by fire (1 Corinthians 3:10–15), covered below.</li>
+        <li>"Do not pronounce judgment before the time, before the Lord comes", who will "disclose the purposes of the heart" (1 Corinthians 4:5).</li>
+        <li>Supporting texts: Matthew 16:27; Luke 14:14; Revelation 11:18; Revelation 22:12.</li>
+      </ul>
+      <h3>Who is judged, and what is evaluated</h3>
+      <p>Only believers are judged here, and their salvation is not in question: "There is therefore now no condemnation for those who are in Christ Jesus" (Romans 8:1; John 5:24). This is a believer's account of their stewardship before their Lord, not a criminal trial.</p>
+      <p>Christ evaluates three things:</p>
+      <ul>
+        <li><strong>Works:</strong> "whether good or evil". The word translated "evil" (phaulos) carries the sense of worthless or base.</li>
+        <li><strong>Motives:</strong> "the purposes of the heart" (1 Corinthians 4:5; Matthew 6:1–6).</li>
+        <li><strong>Faithfulness</strong> with what each person was given (1 Corinthians 4:2). The parables of the talents and the minas picture this (Matthew 25:14–30; Luke 19:11–27).</li>
+      </ul>
+      <h3>The test by fire (1 Corinthians 3:10–15)</h3>
+      <p>Christ is the only foundation. Each believer builds on it with gold, silver and precious stones, which last, or with wood, hay and straw, which burn. "The fire will test what sort of work each one has done." If the work survives, the builder receives a reward. If it burns, the builder "will suffer loss, though he himself will be saved, but only as through fire."</p>
+      <h3>Rewards and loss</h3>
+      <div class="tbl"><table>
+        <tr><th>Crown</th><th>Given for</th><th>Text</th></tr>
+        <tr><td>Imperishable crown</td><td>Self-discipline</td><td>1 Corinthians 9:25</td></tr>
+        <tr><td>Crown of boasting (rejoicing)</td><td>Those won to Christ</td><td>1 Thessalonians 2:19</td></tr>
+        <tr><td>Crown of righteousness</td><td>Loving His appearing</td><td>2 Timothy 4:8</td></tr>
+        <tr><td>Crown of life</td><td>Enduring trials, faithful to death</td><td>James 1:12; Revelation 2:10</td></tr>
+        <tr><td>Unfading crown of glory</td><td>Faithful shepherding</td><td>1 Peter 5:4</td></tr>
+      </table></div>
+      <p>Rewards also include <strong>authority to reign</strong> with Christ: "you shall have authority over ten cities" (Luke 19:17; Revelation 2:26–27; 2 Timothy 2:12). In Revelation 4:10 the elders cast their crowns before the throne.</p>
+      <p>A believer can also <strong>lose</strong> reward (1 Corinthians 3:15; 2 John 8) and "shrink from him in shame at his coming" (1 John 2:28).</p>
+      <h3>Timing in the post-trib view</h3>
+      <p>Rewards are tied to the return and the resurrection: "You will be repaid at the resurrection of the just" (Luke 14:14; 1 Corinthians 4:5; Revelation 11:18; 22:12). So the Bema comes at or right after the second coming, and the rewards take effect as roles in the millennial kingdom.</p>
+      <p>Pre-tribulationists place it in heaven during the seven years. Many amillennial and Reformed interpreters see one general judgment, where the Bema and the great white throne are one event.</p>
+      <h3>Why Paul brings it up</h3>
+      <p>Paul uses the Bema to motivate, not to frighten. "We make it our aim to please him" (2 Corinthians 5:9). It gives reasons to stop judging fellow believers (Romans 14:10) and to run the race to win (1 Corinthians 9:24).</p>
+    </section>
+    <section data-id="e10" data-kind="judgment">
+      <h2>Judgment of the nations</h2>
+      <p class="summary">When the Son of Man sits on His glorious throne, the living nations are gathered and separated: sheep inherit the kingdom, goats go to everlasting fire.</p>
+      <p class="refs">Matt 25:31–46; Joel 3:1–2; Ezek 20:33–38</p>
+      <h3>The scene (Matthew 25:31–46)</h3>
+      <ul>
+        <li><strong>Timing:</strong> "When the Son of Man comes in his glory… then he will sit on his glorious throne" (25:31).</li>
+        <li><strong>Who:</strong> "all the nations", the people alive on earth at His return.</li>
+        <li><strong>The separation:</strong> sheep on His right, goats on His left.</li>
+        <li><strong>The basis:</strong> how they treated "the least of these my brothers". This is evidence of faith, not salvation by works.</li>
+        <li><strong>The outcomes:</strong> "Inherit the kingdom prepared for you" versus "the eternal fire prepared for the devil and his angels".</li>
+      </ul>
+      <h3>Who are "my brothers"?</h3>
+      <ul>
+        <li><strong>Most post-trib and historic premillennial readers:</strong> Jesus' disciples (Matthew 12:48–50; 28:10), especially persecuted believers in the tribulation.</li>
+        <li><strong>Dispensationalists:</strong> often the Jewish people.</li>
+      </ul>
+      <h3>Related judgments at the start of the kingdom</h3>
+      <ul>
+        <li>The nations are judged in the valley of Jehoshaphat for how they treated Israel (Joel 3:1–2).</li>
+        <li>Israel is purged: rebels are removed and the rest enter the land (Ezekiel 20:33–38; Zechariah 13:8–9).</li>
+      </ul>
+      <h3>The post-trib puzzle: who enters the Millennium in mortal bodies?</h3>
+      <p>If every believer is raptured and glorified at the return, who repopulates the earth? Two main answers:</p>
+      <ul>
+        <li><strong>Those who turn at His appearing:</strong> Jews who look on the One they pierced (Zechariah 12:10; Romans 11:26), plus Gentiles spared at the separation, enter in natural bodies.</li>
+        <li><strong>A general judgment:</strong> some read Matthew 25 as a picture of the final, general judgment rather than a separate event at the start of the Millennium.</li>
+      </ul>
+      <p><em>Medium confidence:</em> post-tribulationists are not united on this question.</p>
+      <h3>Compared with the judgment seat of Christ</h3>
+      <div class="tbl"><table>
+        <tr><th></th><th>Judgment seat of Christ</th><th>Judgment of the nations</th></tr>
+        <tr><td>Who</td><td>Resurrected and raptured believers</td><td>Living people on earth at the return</td></tr>
+        <tr><td>Question</td><td>Rewards for faithfulness</td><td>Entry into the kingdom or exclusion</td></tr>
+        <tr><td>Text</td><td>2 Corinthians 5:10</td><td>Matthew 25:31–46</td></tr>
+      </table></div>
+    </section>
+    <section data-id="e09">
+      <h2>Marriage supper of the Lamb</h2>
+      <p class="summary">The celebration of Christ's union with His bride. It is announced just before the return, and post-tribulationists usually place the feast on earth as the Millennium begins.</p>
+      <p class="refs">Rev 19:7–9; Isa 25:6–9; Matt 8:11; 26:29; Luke 22:16–30</p>
+      <h3>The announcement</h3>
+      <p>"The marriage of the Lamb has come, and his Bride has made herself ready." She is clothed in fine linen, which "is the righteous deeds of the saints". "Blessed are those who are invited to the marriage supper of the Lamb" (Revelation 19:7–9). The bride's clothing connects to the judgment seat of Christ.</p>
+      <h3>The Jewish wedding pattern</h3>
+      <div class="tbl"><table>
+        <tr><th>Stage</th><th>Custom</th><th>Fulfilment</th></tr>
+        <tr><td>Betrothal</td><td>Legally binding; a bride price paid</td><td>The church betrothed to Christ (2 Corinthians 11:2); bought with a price (1 Corinthians 6:20)</td></tr>
+        <tr><td>Preparation</td><td>The groom prepares a place in his father's house</td><td>"I go to prepare a place for you" (John 14:2–3)</td></tr>
+        <tr><td>Coming</td><td>The groom comes with a shout to fetch the bride</td><td>"Here is the bridegroom! Come out to meet him." (Matthew 25:6)</td></tr>
+        <tr><td>Feast</td><td>Celebration with invited guests</td><td>The marriage supper (Revelation 19:9)</td></tr>
+      </table></div>
+      <h3>Who is the bride?</h3>
+      <ul>
+        <li><strong>The church</strong> (Ephesians 5:25–32; 2 Corinthians 11:2).</li>
+        <li><strong>New Jerusalem</strong> is also called the bride (Revelation 21:2, 9–10): the people together with their dwelling.</li>
+        <li><strong>Guests:</strong> some distinguish guests, such as Old Testament saints, from the bride. John the Baptist calls himself "the friend of the bridegroom" (John 3:29). Others see the same people pictured in different ways.</li>
+      </ul>
+      <h3>Timing</h3>
+      <p>Revelation 19:7 announces the wedding has come, and the feast itself fits Jesus' kingdom sayings:</p>
+      <ul>
+        <li>Many will "recline at table with Abraham… in the kingdom of heaven" (Matthew 8:11; Luke 13:29).</li>
+        <li>"I will not drink again of this fruit of the vine until that day when I drink it new with you in my Father's kingdom" (Matthew 26:29).</li>
+        <li>He will not eat the Passover again "until it is fulfilled in the kingdom of God"; the disciples will eat and drink at His table (Luke 22:16–18, 30).</li>
+        <li>"On this mountain the Lord of hosts will make for all peoples a feast", and "he will swallow up death forever" (Isaiah 25:6–9).</li>
+      </ul>
+      <p><strong>Views differ:</strong> most post-tribulationists place the feast on earth as the Millennium begins. Others say it happens in heaven, spans the whole Millennium, or belongs to the eternal state. Jamie places the feast on day 1,335 (Daniel 12:12), at the end of 45 days in which the nations are judged and rewards are given. He links it with the Feast of Tabernacles.</p>
+      <h3>Related parables</h3>
+      <ul>
+        <li>The wedding feast and the guest without a wedding garment (Matthew 22:1–14).</li>
+        <li>The ten virgins, about being ready (Matthew 25:1–13).</li>
+      </ul>
+    </section>
+  </div>
+  <div class="era" data-name="Millennium" data-span="1,000 years">
+    <section data-id="e11">
+      <h2>Satan bound, first resurrection</h2>
+      <p class="summary">Satan is locked in the abyss for a thousand years, and the saints, including the tribulation martyrs, are raised to reign with Christ.</p>
+      <p class="refs">Rev 20:1–6; Isa 24:21–22; 1 Cor 15:23; Dan 12:2; John 5:28–29</p>
+      <h3>Satan bound (Revelation 20:1–3)</h3>
+      <p>An angel with the key of the abyss and a great chain binds Satan, casts him into the pit and seals it, "so that he might not deceive the nations any longer, until the thousand years were ended". After that "he must be released for a little while".</p>
+      <p>Isaiah 24:21–22 describes a similar scene: the host on high punished and shut up in prison, "and after many days they will be punished".</p>
+      <p><strong>Premillennial reading:</strong> Satan is plainly still deceiving now. He blinds minds (2 Corinthians 4:4), prowls like a lion (1 Peter 5:8), and works in the disobedient (Ephesians 2:2). So the binding is future. Amillennialists connect it to Christ binding "the strong man" at His first coming (Matthew 12:29).</p>
+      <h3>The first resurrection (Revelation 20:4–6)</h3>
+      <ul>
+        <li>John sees thrones, with judgment given to those seated on them.</li>
+        <li>He sees the souls of those beheaded for their witness, who refused the beast and his mark: "they came to life and reigned with Christ for a thousand years".</li>
+        <li>"The rest of the dead did not come to life until the thousand years were ended. This is the first resurrection."</li>
+        <li>"Blessed and holy is the one who shares in the first resurrection! Over such the second death has no power, but they will be priests of God and of Christ."</li>
+      </ul>
+      <h3>The order of resurrection</h3>
+      <div class="tbl"><table>
+        <tr><th>Stage</th><th>Who</th><th>Texts</th></tr>
+        <tr><td>Firstfruits</td><td>Christ</td><td>1 Corinthians 15:20–23</td></tr>
+        <tr><td>First resurrection: "resurrection of the just", "of life"</td><td>Those who are Christ's, at His coming, including tribulation martyrs</td><td>1 Corinthians 15:23; 1 Thessalonians 4:16; Luke 14:14; Revelation 20:4–6</td></tr>
+        <tr><td>Second resurrection: "of judgment"</td><td>"The rest of the dead", after the 1,000 years</td><td>Revelation 20:5, 12–13; John 5:28–29; Daniel 12:2; Acts 24:15</td></tr>
+      </table></div>
+      <h3>Why "came to life" means bodily resurrection both times</h3>
+      <p>Revelation 20:4–5 uses the same verb (ezēsan, "came to life") for both groups. The 19th-century scholar Henry Alford argued that if the first "coming to life" is spiritual and the second bodily, the passage's language stops meaning anything. This is a standard premillennial argument.</p>
+      <h3>Who reigns</h3>
+      <p>The saints reign: Daniel 7:22, 27; 1 Corinthians 6:2; 2 Timothy 2:12; Revelation 5:10; 20:6.</p>
+    </section>
+    <section data-id="e12">
+      <h2>Millennial reign of Christ</h2>
+      <p class="summary">For 1,000 years Christ rules the earth from Jerusalem with His glorified saints. Peace, justice and a renewed creation fill the world, while mortal survivors live, multiply, and still need a new heart.</p>
+      <p class="refs">Rev 20:4–6; Isa 2:2–4; 11:1–10; 65:17–25; Zech 14:9, 16–21; Ps 72</p>
+      <h3>Life in the kingdom</h3>
+      <div class="tbl"><table>
+        <tr><th>Aspect</th><th>What Scripture describes</th><th>Key texts</th></tr>
+        <tr><td>Christ's government</td><td>King over all the earth, ruling from Zion with a rod of iron</td><td>Psalm 2:6–9; Isaiah 9:6–7; 24:23; Zechariah 14:9; Revelation 12:5; 19:15</td></tr>
+        <tr><td>The saints' rule</td><td>Reigning with Christ; apostles over the twelve tribes; faithful servants over cities</td><td>Revelation 5:10; 20:4–6; Matthew 19:28; Luke 19:17; 1 Corinthians 6:2</td></tr>
+        <tr><td>Israel restored</td><td>Regathered, given a new heart, one nation under "David their king"</td><td>Ezekiel 36–37; Jeremiah 31:31–40; Amos 9:11–15; Romans 11:26; Acts 1:6; 3:21</td></tr>
+        <tr><td>Worldwide worship</td><td>Nations stream to Jerusalem; the Feast of Tabernacles is kept</td><td>Isaiah 2:2–3; Zechariah 8:20–23; 14:16–19; Isaiah 66:23</td></tr>
+        <tr><td>Peace and justice</td><td>Swords into plowshares; everyone under their own vine and fig tree</td><td>Isaiah 2:4; 11:3–5; Micah 4:3–4; Psalm 72</td></tr>
+        <tr><td>Creation renewed</td><td>Wolf with lamb; desert blossoms; abundant harvests</td><td>Isaiah 11:6–9; 35:1–10; Amos 9:13; Romans 8:19–22</td></tr>
+        <tr><td>Long life</td><td>Dying at 100 counted young</td><td>Isaiah 65:20–22</td></tr>
+        <tr><td>Knowledge of God</td><td>"The earth shall be full of the knowledge of the Lord as the waters cover the sea"</td><td>Isaiah 11:9; Habakkuk 2:14; Jeremiah 31:34</td></tr>
+        <tr><td>The temple</td><td>A temple, river and land allotments; read literally (memorial worship) or symbolically</td><td>Ezekiel 40–48</td></tr>
+      </table></div>
+      <h3>Sin and death still exist</h3>
+      <p>Mortals still die (Isaiah 65:20). Nations that refuse to worship receive no rain (Zechariah 14:17–19). At the end, a final rebellion breaks out (Revelation 20:7–9). Even under perfect government, the human heart needs regeneration.</p>
+      <h3>What believers do during the Millennium</h3>
+      <p>Scripture gives the broad outline rather than a daily picture, but several roles are clear.</p>
+      <div class="tbl"><table>
+        <tr><th>Role</th><th>What it involves</th><th>Key texts</th></tr>
+        <tr><td>Rule with Christ</td><td>Real authority, given in proportion to faithfulness: "authority over ten cities", "over five cities"</td><td>Luke 19:17–19; Matthew 25:21; Revelation 2:26–27; 5:10; 20:6</td></tr>
+        <tr><td>Judge</td><td>"The saints will judge the world"; the apostles judge the twelve tribes of Israel</td><td>1 Corinthians 6:2; Matthew 19:28; Daniel 7:22</td></tr>
+        <tr><td>Serve as priests</td><td>"Priests of God and of Christ", leading worship and representing God to the nations</td><td>Revelation 1:6; 20:6; 1 Peter 2:9; Isaiah 61:6</td></tr>
+        <tr><td>Teach and shepherd</td><td>The nations come to Zion "that he may teach us his ways", and the earth fills with the knowledge of the Lord</td><td>Isaiah 2:3; 11:9; Jeremiah 3:15</td></tr>
+        <tr><td>Share His table</td><td>Eating and drinking at Christ's table in His kingdom</td><td>Luke 22:29–30; Matthew 26:29</td></tr>
+      </table></div>
+      <ul>
+        <li><strong>In glorified bodies:</strong> believers raised or changed at the return no longer die or marry; they "cannot die anymore" (Luke 20:35–36). They live and serve among mortal people, much as the risen Jesus ate and talked with His disciples (Luke 24:36–43; John 21:9–14). That comparison is an inference, not a direct statement of Scripture.</li>
+        <li><strong>Rewards become roles:</strong> the judgment seat of Christ sets the scope of each believer's responsibility in the kingdom (Luke 19:17–19).</li>
+      </ul>
+      <h3>Why a Millennium?</h3>
+      <p>Premillennialists give several reasons for a thousand-year reign on this earth before the eternal state:</p>
+      <ul>
+        <li><strong>Promises kept in history:</strong> God promised Abraham a land (Genesis 15:18–21), David a throne (2 Samuel 7:12–16; Luke 1:32–33), and Israel a restored nation under the new covenant (Jeremiah 31:31–37). The Millennium is where these are fulfilled.</li>
+        <li><strong>Christ vindicated where He was rejected:</strong> the One crucified on earth reigns openly on earth (Psalm 2:6–9; Philippians 2:9–11; Hebrews 2:5–8).</li>
+        <li><strong>The Lord's Prayer answered:</strong> "Your kingdom come, your will be done, on earth as it is in heaven" (Matthew 6:10).</li>
+        <li><strong>A reign before "the end":</strong> Paul gives an order: Christ the firstfruits, "then at his coming those who belong to Christ", "then comes the end", when Christ hands the kingdom to the Father. Before that, "he must reign until he has put all his enemies under his feet" (1 Corinthians 15:23–28). Premillennialists read that reign as the period between the return and the end.</li>
+        <li><strong>A foretaste of the new creation:</strong> creation "waits with eager longing" to be set free (Romans 8:19–22). The Millennium shows a renewed earth before the final new heavens and new earth.</li>
+        <li><strong>The human heart exposed:</strong> the final rebellion shows that sin is a problem of the heart, not of environment (Revelation 20:7–9).</li>
+        <li><strong>The early church's view:</strong> many early Christian writers held this view, including Papias, Justin Martyr and Irenaeus. Irenaeus argued it is fitting for the righteous to receive their reward in the same creation where they suffered (Against Heresies, Book 5).</li>
+      </ul>
+    </section>
+    <section data-id="e13">
+      <h2>Satan released, Gog and Magog</h2>
+      <p class="summary">At the end of the thousand years Satan is released, deceives the nations into one last rebellion, and is destroyed by fire from heaven, then cast into the lake of fire for ever.</p>
+      <p class="refs">Rev 20:7–10; Ezek 38–39</p>
+      <h3>The final rebellion (Revelation 20:7–10)</h3>
+      <ul>
+        <li>Satan is loosed and deceives the nations "at the four corners of the earth, Gog and Magog". Their number "is like the sand of the sea".</li>
+        <li>They surround "the camp of the saints and the beloved city".</li>
+        <li>Fire comes down from God out of heaven and devours them.</li>
+        <li>The devil is cast into the lake of fire "where the beast and the false prophet were". They are still there after a thousand years, and they "will be tormented day and night forever and ever".</li>
+      </ul>
+      <h3>Why release Satan at all?</h3>
+      <p>"He must be released for a little while" (Revelation 20:3). Common explanations:</p>
+      <ul>
+        <li><strong>It exposes the human heart:</strong> people born into perfect conditions still rebel without a new heart.</li>
+        <li><strong>It vindicates God's final judgment:</strong> no one can blame environment or Satan's absence.</li>
+        <li><strong>It brings Satan's final, public defeat.</strong></li>
+      </ul>
+      <h3>How Revelation 20 relates to Ezekiel 38–39</h3>
+      <p>Ezekiel describes Gog, of the land of Magog, chief prince of Meshech and Tubal, invading restored Israel "in the latter years" and being destroyed by God.</p>
+      <div class="tbl"><table>
+        <tr><th>View</th><th>Reasoning</th></tr>
+        <tr><td>Same event as Revelation 20</td><td>Same names; final invasion of God's people; fire from heaven (Ezekiel 38:22; 39:6)</td></tr>
+        <tr><td>Ezekiel fulfilled at or near Armageddon; Revelation reuses the names</td><td>Ezekiel's bird feast (39:17–20) matches Revelation 19:17–18. Burning weapons for seven years and burying for seven months (39:9, 12) need time afterward, which fits the start of the Millennium rather than its end</td></tr>
+        <tr><td>Ezekiel fulfilled during the tribulation</td><td>Common in pre-trib teaching, but less often held by post-tribulationists</td></tr>
+      </table></div>
+    </section>
+  </div>
+  <div class="era" data-name="After the thousand years" data-span="for ever">
+    <section data-id="e14" data-kind="judgment">
+      <h2>Great white throne judgment</h2>
+      <p class="summary">After the Millennium, the unbelieving dead of all ages are raised and judged according to their works. Death and Hades are thrown into the lake of fire.</p>
+      <p class="refs">Rev 20:11–15; John 5:22–29; Dan 12:2; Rom 2:5–6; Heb 9:27</p>
+      <h3>The scene (Revelation 20:11–15)</h3>
+      <ul>
+        <li><strong>The throne:</strong> John sees "a great white throne and him who was seated on it. From his presence earth and sky fled away".</li>
+        <li><strong>The Judge:</strong> the Father "has given all judgment to the Son" (John 5:22, 27; Acts 17:31; 2 Timothy 4:1).</li>
+        <li><strong>Who is judged:</strong> "the dead, great and small". These are the rest of the dead who were not in the first resurrection (20:5). The sea, Death and Hades give up their dead. This is the "resurrection of judgment" (John 5:29; Daniel 12:2).</li>
+      </ul>
+      <h3>The books</h3>
+      <ul>
+        <li><strong>Books of works:</strong> "the dead were judged by what was written in the books, according to what they had done" (Romans 2:5–6; Matthew 12:36).</li>
+        <li><strong>Degrees of punishment:</strong> "a severe beating" versus "a light beating"; more tolerable for Tyre and Sodom (Luke 12:47–48; Matthew 11:21–24).</li>
+        <li><strong>The book of life:</strong> "if anyone's name was not found written in the book of life, he was thrown into the lake of fire" (20:15).</li>
+      </ul>
+      <h3>The end of death</h3>
+      <p>Death and Hades are thrown into the lake of fire: "This is the second death, the lake of fire" (20:14; 21:8). "The last enemy to be destroyed is death" (1 Corinthians 15:26).</p>
+      <h3>Why is the book of life opened?</h3>
+      <p>No one who rejected Christ will be found in it. It is "the Lamb's book of life" (21:27), the record of those who belong to Him (Luke 10:20; Philippians 4:3; Revelation 13:8), and good works cannot earn a place in it (Ephesians 2:8–9). So why open it here? Premillennial teachers give two answers, and Scripture does not settle which is right:</p>
+      <ul>
+        <li><strong>To show the verdict is just:</strong> on this view everyone at the throne is an unbeliever. The books of works show what each person did and decide the degree of punishment. The book of life is opened to show openly that their names are absent, so the verdict rests on not belonging to Christ, not on a tally of deeds.</li>
+        <li><strong>Because believers from the Millennium may be there:</strong> people born during the thousand years who trust Christ are written in the book of life. Scripture never says when those who die during the Millennium are raised, or when believers alive at its end are changed. Some teachers place them at this final resurrection, where their names are found. Revelation 20:15 says "if anyone's name was not found", which some read as implying that some names are found.</li>
+      </ul>
+      <p>Either way, believers raised at Christ's return are not at risk here. "Over such the second death has no power" (Revelation 20:6), and the believer "does not come into judgment, but has passed from death to life" (John 5:24).</p>
+      <h3>Compared with the judgment seat of Christ</h3>
+      <div class="tbl"><table>
+        <tr><th></th><th>Judgment seat of Christ</th><th>Great white throne</th></tr>
+        <tr><td>Who</td><td>Believers</td><td>The unbelieving dead</td></tr>
+        <tr><td>Purpose</td><td>Rewards or loss of reward</td><td>Condemnation, by works</td></tr>
+        <tr><td>Timing</td><td>At the return, before the Millennium</td><td>After the Millennium</td></tr>
+        <tr><td>Outcome</td><td>Reigning with Christ</td><td>The lake of fire</td></tr>
+      </table></div>
+      <h3>Why it matters now</h3>
+      <p>"It is appointed for man to die once, and after that comes judgment" (Hebrews 9:27). God "is patient toward you, not wishing that any should perish" (2 Peter 3:9). This judgment is why the gospel is urgent.</p>
+    </section>
+    <section data-id="e15">
+      <h2>New heavens, new earth, New Jerusalem</h2>
+      <p class="summary">God makes all things new. The holy city descends from heaven, God dwells with His people, and the curse is gone for ever.</p>
+      <p class="refs">Rev 21–22; Isa 65:17; 66:22; 2 Pet 3:10–13; 1 Cor 15:24–28</p>
+      <h3>The new creation</h3>
+      <ul>
+        <li>"I saw a new heaven and a new earth, for the first heaven and the first earth had passed away, and the sea was no more" (Revelation 21:1; Isaiah 65:17; 66:22).</li>
+        <li>The heavenly bodies burn up and dissolve, and "we are waiting for new heavens and a new earth in which righteousness dwells" (2 Peter 3:10–13).</li>
+        <li>Creation is set free from its bondage to decay (Romans 8:21).</li>
+      </ul>
+      <h3>The city comes down</h3>
+      <ul>
+        <li>New Jerusalem comes "down out of heaven from God, prepared as a bride adorned for her husband" (Revelation 21:2, 10).</li>
+        <li>It is the city Abraham looked for (Hebrews 11:10, 16), the heavenly Jerusalem (Hebrews 12:22; Galatians 4:26), and the place Jesus went to prepare (John 14:2).</li>
+        <li>"Behold, the dwelling place of God is with man… He will wipe away every tear from their eyes, and death shall be no more, neither shall there be mourning, nor crying, nor pain anymore" (21:3–4). "Behold, I am making all things new" (21:5).</li>
+      </ul>
+      <h3>The city described</h3>
+      <div class="tbl"><table>
+        <tr><th>Feature</th><th>Detail</th><th>Text</th></tr>
+        <tr><td>Size</td><td>12,000 stadia (about 1,400 miles or 2,200 km) in length, breadth and height, a cube like the Holy of Holies (1 Kings 6:20)</td><td>21:16</td></tr>
+        <tr><td>Gates</td><td>Twelve pearl gates bearing the names of the twelve tribes</td><td>21:12, 21</td></tr>
+        <tr><td>Foundations</td><td>Twelve foundations of precious stones bearing the names of the twelve apostles</td><td>21:14, 19–20</td></tr>
+        <tr><td>Street</td><td>Pure gold, like transparent glass</td><td>21:21</td></tr>
+        <tr><td>Temple</td><td>None: the Lord God and the Lamb are its temple</td><td>21:22</td></tr>
+        <tr><td>Light</td><td>No sun or moon; the glory of God lights it</td><td>21:23; Isaiah 60:19–20</td></tr>
+        <tr><td>Nations</td><td>Walk in its light; kings bring their glory into it</td><td>21:24–26</td></tr>
+        <tr><td>Purity</td><td>Nothing unclean enters, only those in the Lamb's book of life</td><td>21:27</td></tr>
+        <tr><td>River and tree</td><td>The river of life from the throne; the tree of life with twelve fruits, its leaves for the healing of the nations</td><td>22:1–2; Ezekiel 47:12</td></tr>
+      </table></div>
+      <h3>Eden restored: Genesis and Revelation</h3>
+      <div class="tbl"><table>
+        <tr><th>Genesis</th><th>Revelation</th></tr>
+        <tr><td>Heavens and earth created (1:1)</td><td>New heavens and new earth (21:1)</td></tr>
+        <tr><td>A river and the tree of life (2:9–10)</td><td>The river of life and the tree of life (22:1–2)</td></tr>
+        <tr><td>God walks with man (3:8)</td><td>God dwells with His people (21:3)</td></tr>
+        <tr><td>The curse (3:17)</td><td>"No longer will there be anything accursed" (22:3)</td></tr>
+        <tr><td>Driven from His presence (3:24)</td><td>"They will see his face" (22:4)</td></tr>
+      </table></div>
+      <h3>The final word</h3>
+      <p>The Son hands the kingdom to the Father, "that God may be all in all" (1 Corinthians 15:24–28). The saints "will reign forever and ever" (22:5). "Surely I am coming soon." Amen. "Come, Lord Jesus!" (22:20).</p>
+    </section>
+  </div>
+</template>
+
+<!-- ============ READING REVELATION CONTENT ============ -->
+<template id="revelation-content">
+  <section data-page="overview">
+    <h2>Before you start</h2>
+    <p class="summary">Revelation is "the revelation of Jesus Christ" (1:1). It shows not only what He will do, but who He is and why He does it.</p>
+    <h3>How the book is laid out</h3>
+    <p>Revelation 1:19 gives the book's outline: "Write therefore the things that you have seen, those that are and those that are to take place after this."</p>
+    <div class="outline">
+      <div><b>What John has seen</b><span>Chapter 1: the risen Jesus</span></div>
+      <div><b>What is now</b><span>Chapters 2–3: letters to seven churches</span></div>
+      <div><b>What comes after this</b><span>Chapters 4–22</span></div>
+    </div>
+    <p>From chapter 4 on, the book does not run in one straight line. <strong>Chronological</strong> sections move the story forward in order. <strong>Parenthetical</strong> sections pause to explain: they step out of the sequence to show who is involved, why something is happening or how heaven sees it, like a flashback in a movie. Knowing which kind you are reading keeps the book from seeming to jump around. The chapter buttons above are shaded the same way.</p>
+    <div class="tbl"><table>
+      <tr><th>Chronological</th><th>Parenthetical</th></tr>
+      <tr><td>4–6</td><td>7</td></tr>
+      <tr><td>8–9</td><td>10:1–11:13</td></tr>
+      <tr><td>11:14–19</td><td>12–14</td></tr>
+      <tr><td>15–16</td><td>17:1–19:10</td></tr>
+      <tr><td>19:11–21:8</td><td>21:9–22:5</td></tr>
+    </table></div>
+    <p>Revelation 22:6–21 closes the book.</p>
+    <h3>Why study it?</h3>
+    <ul>
+      <li><strong>It is about Jesus.</strong> Studying how the story ends is part of knowing Him.</li>
+      <li><strong>It is basic, not advanced.</strong> Hebrews 6:1–2 lists "the resurrection of the dead, and eternal judgment" among the elementary teachings of the faith.</li>
+      <li><strong>It opens up the rest of the Bible.</strong> Daniel, Ezekiel, Zechariah and Isaiah make far more sense once the end of the story is clear.</li>
+      <li><strong>It carries a blessing:</strong> "Blessed is the one who reads aloud the words of this prophecy, and blessed are those who hear, and who keep what is written in it" (1:3).</li>
+    </ul>
+    <h3>Who, where and when</h3>
+    <ul>
+      <li><strong>Author:</strong> the apostle John (1:1, 4, 9).</li>
+      <li><strong>Place:</strong> the island of Patmos, off the west coast of modern Turkey, where John had been exiled "on account of the word of God and the testimony of Jesus" (1:9).</li>
+      <li><strong>Date:</strong> about AD 95, near the end of the emperor Domitian's reign. This is the date the early church gave, starting with Irenaeus around AD 180.</li>
+      <li><strong>Why the date matters:</strong> a book written after AD 70 cannot be mainly a prophecy of Jerusalem's fall in that year, which is what the preterist view below needs it to be.</li>
+    </ul>
+    <h3>Four ways people read Revelation</h3>
+    <div class="tbl"><table>
+      <tr><th>Approach</th><th>Main idea</th></tr>
+      <tr><td>Preterist</td><td>Most of the book was fulfilled in the first century, especially when Jerusalem fell in AD 70.</td></tr>
+      <tr><td>Historicist</td><td>The book maps out church history, from the first century to the end of the age.</td></tr>
+      <tr><td>Idealist</td><td>The book pictures timeless truths, such as good overcoming evil, rather than specific events.</td></tr>
+      <tr><td>Futurist</td><td>From chapter 4 on, the book mainly describes the final years before Christ returns. These notes take this approach, as did early writers such as Irenaeus and Hippolytus.</td></tr>
+    </table></div>
+    <h3>Reading the symbols</h3>
+    <p>A rule of thumb: "When the plain sense makes sense, seek no other sense." Revelation uses figures of speech, such as a lamb and a dragon, but they stand for real people and real events. The book often explains its own symbols. The seven stars, for example, are the angels of the seven churches, and the seven lampstands are the churches (1:20).</p>
+  </section>
+
+  <section data-ch="1" data-parts="prologue" data-events="e06">
+    <h2>Jesus revealed to John</h2>
+    <p class="summary">John, exiled on Patmos, sees the risen Jesus in glory and is told to write what he sees to seven churches.</p>
+    <h3>The greeting (1:1–8)</h3>
+    <ul>
+      <li><strong>"The revelation of Jesus Christ" (1:1):</strong> the book is first about a Person. It shows what He will do and why.</li>
+      <li><strong>"Him who is and who was and who is to come" (1:4):</strong> here the phrase refers to the Father, because Jesus is named separately in 1:5. The greeting comes from the Father, from the seven spirits before His throne and from Jesus Christ.</li>
+      <li><strong>The seven spirits (1:4):</strong> the fullness of the Holy Spirit, as in Isaiah 11:2, where the Spirit rests on the Messiah with wisdom, understanding, counsel, might, knowledge and the fear of the Lord.</li>
+      <li><strong>"The firstborn of the dead" (1:5):</strong> Jesus was the first raised in a glorified body that will never die again. "Firstborn" implies that more will follow, so it guarantees the resurrection of His people (1 Corinthians 15:23).</li>
+      <li><strong>"Behold, he is coming with the clouds, and every eye will see him, even those who pierced him" (1:7):</strong> this quotes Zechariah 12:10. Israel will see the One they rejected and mourn, and so "all Israel will be saved" (Romans 11:26). Zechariah 14:4 adds that His feet will stand on the Mount of Olives.</li>
+      <li><strong>The clouds (1:7):</strong> Jamie connects them with the fiery throne-chariot of Ezekiel 1, carried by cherubim, and reads it as the vehicle of Christ's return (compare Exodus 24:10; Daniel 7:9).</li>
+      <li><strong>"The Alpha and the Omega" (1:8):</strong> the Lord God takes this title, along with "who is and who was and who is to come". Jesus later claims "the Alpha and the Omega" for Himself (22:13).</li>
+    </ul>
+    <h3>The Father is coming too</h3>
+    <p>In 1:4 the Father is the One "who is to come". Jesus comes first, before the Millennium. The Father comes to dwell with His people when New Jerusalem comes down: "Behold, the dwelling place of God is with man" (21:3), and "the throne of God and of the Lamb will be in it… They will see his face" (22:3–4). Daniel 7:9 pictures the Ancient of Days on a throne with wheels. Jamie sees Jesus as the forerunner (Hebrews 6:20) who comes ahead of the Father.</p>
+    <h3>The vision of the risen Christ (1:9–20)</h3>
+    <ul>
+      <li>John calls himself "your brother and partner in the tribulation and the kingdom and the patient endurance that are in Jesus" (1:9).</li>
+      <li>He is "in the Spirit on the Lord's day" and hears "a loud voice like a trumpet" (1:10).</li>
+      <li>Jesus stands among seven golden lampstands. His eyes are like fire, His voice like many waters, and a sharp two-edged sword comes from His mouth (1:12–16).</li>
+      <li>"Fear not… I died, and behold I am alive forevermore, and I have the keys of Death and Hades" (1:17–18).</li>
+      <li><strong>The symbols explained (1:20):</strong> the seven stars are the angels of the seven churches, and the seven lampstands are the churches. The Greek word for angel also means messenger, so the "angel" may be a heavenly being over each church or its human leader.</li>
+      <li><strong>A lampstand can be removed (2:5):</strong> a church can keep meeting and still lose its light.</li>
+    </ul>
+    <h3>Why these seven churches?</h3>
+    <p>They were real, leading churches in the Roman province of Asia, now western Turkey, in a region reached with the gospel during Paul's years in Ephesus (Acts 19:10). They were not the only churches of the time. Each letter ends "He who has an ear, let him hear what the Spirit says to the churches", so the letters speak to every church in every generation, including the church at the end of the age.</p>
+  </section>
+
+  <section data-ch="2-3" data-parts="letters" data-events="e02 e05 e08">
+    <h2>Letters to the seven churches</h2>
+    <p class="summary">Jesus writes to seven real churches. Each letter praises, corrects, warns and makes a promise "to the one who conquers".</p>
+    <h3>The pattern of every letter</h3>
+    <ul>
+      <li>Jesus describes Himself with a detail from the vision in chapter 1, then says "I know your works".</li>
+      <li>He praises what is good, corrects what is wrong and calls them to repent.</li>
+      <li>Every letter ends with a promise "to the one who conquers" and the words "He who has an ear, let him hear what the Spirit says to the churches". Each person must hear, but the message is for all the churches, and everyone is called to overcome.</li>
+    </ul>
+    <h3>The seven churches</h3>
+    <div class="tbl"><table>
+      <tr><th>Church</th><th>Praised for</th><th>Corrected for</th><th>Promise to the one who conquers</th></tr>
+      <tr><td>Ephesus (2:1–7)</td><td>Hard work, endurance, testing false apostles, hating the works of the Nicolaitans</td><td>"You have abandoned the love you had at first"</td><td>To eat of the tree of life in the paradise of God</td></tr>
+      <tr><td>Smyrna (2:8–11)</td><td>Enduring tribulation and poverty, "but you are rich"</td><td>Nothing</td><td>The crown of life; not hurt by the second death</td></tr>
+      <tr><td>Pergamum (2:12–17)</td><td>Holding fast His name where Satan's throne is, even when Antipas was killed</td><td>Tolerating the teaching of Balaam and of the Nicolaitans</td><td>Hidden manna and a white stone with a new name</td></tr>
+      <tr><td>Thyatira (2:18–29)</td><td>Love, faith, service and endurance; "your latter works exceed the first"</td><td>Tolerating "Jezebel", who leads His servants into sexual immorality and idolatry</td><td>Authority over the nations, and the morning star</td></tr>
+      <tr><td>Sardis (3:1–6)</td><td>A few "who have not soiled their garments"</td><td>"You have the reputation of being alive, but you are dead"</td><td>White garments; a name never blotted out of the book of life; confessed before the Father</td></tr>
+      <tr><td>Philadelphia (3:7–13)</td><td>"You have but little power, and yet you have kept my word and have not denied my name"</td><td>Nothing</td><td>A pillar in the temple of God, bearing the names of God, of New Jerusalem and Jesus' new name</td></tr>
+      <tr><td>Laodicea (3:14–22)</td><td>Nothing</td><td>Lukewarm: "neither cold nor hot"</td><td>To sit with Jesus on His throne</td></tr>
+    </table></div>
+    <h3>Ephesus: works without love</h3>
+    <p>The church did everything right but had lost its first love. The way back: "Remember therefore from where you have fallen; repent, and do the works you did at first" (2:5). If they do not, Jesus will remove their lampstand. He cares deeply that His people love Him.</p>
+    <p>The Nicolaitans taught that grace is a license to sin. Some early writers linked them to Nicolaus, one of the seven chosen in Acts 6:5. Jesus says He hates their works (2:6).</p>
+    <h3>Smyrna: faithful unto death</h3>
+    <p>Smyrna gets no correction, only a warning that suffering is coming: "Be faithful unto death, and I will give you the crown of life" (2:10). The same crown is promised to the one "who remains steadfast under trial" (James 1:12). Crowns mean real reward and authority in the age to come, and Jesus wants His people motivated by them. The second death is the lake of fire (20:14).</p>
+    <h3>Pergamum: where Satan's throne is</h3>
+    <p>Pergamum was a center of pagan and emperor worship. Its great altar of Zeus, now in a museum in Berlin, is one suggested meaning of "Satan's throne" (2:13). Balaam, unable to curse Israel, taught Balak to lure Israel into sexual immorality and idolatry so that they would bring judgment on themselves (2:14; Numbers 25:1–3; 31:16). Jesus warns that He will "war against them with the sword of my mouth" (2:16). The white stone may echo stones used as tickets of admission to a feast.</p>
+    <h3>Thyatira: tolerating "Jezebel"</h3>
+    <p>A false prophetess, or the spirit she represents, leads believers into sexual immorality and idolatry, which Jesus calls "the deep things of Satan" (2:24). He gave her time to repent (2:21). "I am he who searches mind and heart, and I will give to each of you according to your works" (2:23).</p>
+    <p>The promise is rule with Christ: "authority over the nations, and he will rule them with a rod of iron" (2:26–27; Psalm 2:8–9), and "the morning star" (2:28), a title Jesus later uses of Himself (22:16).</p>
+    <h3>Sardis: wake up</h3>
+    <p>The cure for a dead church is to "remember, then, what you received and heard. Keep it, and repent" (3:3). Then a warning: "If you will not wake up, I will come like a thief, and you will not know at what hour I will come against you." The warning is conditional. A church that stays awake will not be caught by surprise, as Paul also says (1 Thessalonians 5:4).</p>
+    <h3>Philadelphia: kept through the hour of trial</h3>
+    <ul>
+      <li><strong>The key of David (3:7):</strong> from Isaiah 22:20–22, where the faithful Eliakim replaces the steward Shebna and is given "the key of the house of David. He shall open, and none shall shut."</li>
+      <li><strong>"I will keep you from the hour of trial that is coming on the whole world" (3:10):</strong> the phrase "keep from" (tēreō ek) appears only here and in John 17:15, where Jesus prays, "I do not ask that you take them out of the world, but that you keep them from the evil one." It means protection through the trial, like Israel in Goshen, not removal before it.</li>
+      <li>"Hold fast what you have, so that no one may seize your crown" (3:11).</li>
+    </ul>
+    <h3>Laodicea: lukewarm</h3>
+    <p>"For you say, I am rich, I have prospered, and I need nothing, not realizing that you are wretched, pitiable, poor, blind, and naked" (3:17). Jesus counsels them to buy from Him gold refined by fire, white garments and salve for their eyes (3:18). "Those whom I love, I reprove and discipline, so be zealous and repent. Behold, I stand at the door and knock" (3:19–20).</p>
+    <p>The last promise is the greatest: "The one who conquers, I will grant him to sit with me on my throne, as I also conquered and sat down with my Father on his throne" (3:21). Ruling with Christ is real, not a metaphor (Daniel 7:27; Matthew 19:28; Revelation 20:4).</p>
+    <h3>Why the warnings and rewards?</h3>
+    <p>They are incentives to live well in this age, because how we live now shapes our place in the age to come. Rewards depend on how faithfully people use what they were given and how they overcome, not on how gifted they are (Matthew 25:14–30). See the judgment seat of Christ on the timeline.</p>
+  </section>
+
+  <section data-ch="4" data-parts="chrono">
+    <h2>The throne room</h2>
+    <p class="summary">A door opens in heaven, and John sees the Father on His throne surrounded by endless worship. This scene sets up everything that follows.</p>
+    <h3>"Come up here" (4:1–2)</h3>
+    <p>A voice like a trumpet calls John: "Come up here, and I will show you what must take place after this." This begins the third part of the book, the things to come (1:19). At once John is "in the Spirit" and sees a throne in heaven.</p>
+    <h3>What John sees</h3>
+    <div class="tbl"><table>
+      <tr><th>Feature</th><th>In the text</th><th>What it suggests</th></tr>
+      <tr><td>The One on the throne</td><td>Like jasper and carnelian (sardius) (4:3)</td><td>The Father. The brilliant white of jasper suggests purity and power; the deep red suggests passion and zeal</td></tr>
+      <tr><td>Rainbow</td><td>Like an emerald, around the throne (4:3)</td><td>Mercy. Mercy stands at the center of the judgments that follow (compare Genesis 9:13–16)</td></tr>
+      <tr><td>24 elders</td><td>On 24 thrones, in white garments with golden crowns (4:4)</td><td>See below</td></tr>
+      <tr><td>Seven torches of fire</td><td>"The seven spirits of God" (4:5)</td><td>The fullness of the Holy Spirit (Isaiah 11:2)</td></tr>
+      <tr><td>Sea of glass</td><td>Like crystal, before the throne (4:6)</td><td>A real place before the throne (also 15:2), not a picture of the whole of eternity</td></tr>
+      <tr><td>Four living creatures</td><td>Full of eyes, six wings, like a lion, an ox, a man and an eagle (4:6–8)</td><td>Like the six-winged seraphim of Isaiah 6. Their eyes suggest they see God from every angle at once, always seeing something new</td></tr>
+    </table></div>
+    <h3>Endless worship (4:8–11)</h3>
+    <ul>
+      <li>"Holy, holy, holy, is the Lord God Almighty, who was and is and is to come!" (4:8). The creatures never stop worshiping, though they sing other songs too (5:9).</li>
+      <li>They still say He "is to come", so this scene is before the second coming. Jamie places it just before the seals open.</li>
+      <li>The elders cast their crowns before the throne: everything they have is by grace (4:10–11).</li>
+      <li>These are not the cherubim of Ezekiel 1, which have four wings and four faces each and carry the throne from beneath.</li>
+    </ul>
+    <h3>Who are the 24 elders?</h3>
+    <ul>
+      <li><strong>Redeemed people:</strong> often taken as the 12 patriarchs of Israel's tribes and the 12 apostles (compare 21:12–14).</li>
+      <li><strong>Angels:</strong> a high rank of angels. Jamie leans this way, because the elders already wear crowns and sit on thrones, while the saints receive their rewards together at the resurrection (Hebrews 11:39–40).</li>
+    </ul>
+    <p>The class left this question open.</p>
+  </section>
+
+  <section data-ch="5" data-parts="chrono" data-events="e05 e12">
+    <h2>The scroll and the Lamb</h2>
+    <p class="summary">No one is worthy to open God's sealed scroll except the Lamb who was slain. When He takes it, all of heaven and earth worship.</p>
+    <h3>The scroll (5:1–5)</h3>
+    <ul>
+      <li>The Father holds a scroll "written within and on the back, sealed with seven seals" (5:1). It holds His plan for the end of the age and the coming of His kingdom.</li>
+      <li>No one in heaven, on earth or under the earth is worthy to open it, and John weeps (5:3–4). Jamie suggests John recognised the scene from Daniel 7:13–14, where the Son of Man receives the kingdom: if the scroll stayed sealed, that promise could not be fulfilled. The text itself does not say why John weeps.</li>
+      <li>"Weep no more; behold, the Lion of the tribe of Judah, the Root of David, has conquered, so that he can open the scroll" (5:5).</li>
+      <li>Jesus is both David's root and his descendant (22:16): David's Lord and David's son. He used this to silence the Pharisees from Psalm 110 (Matthew 22:41–46).</li>
+    </ul>
+    <h3>The Lamb takes the scroll (5:6–10)</h3>
+    <ul>
+      <li>Told to behold a Lion, John sees a Lamb "standing, as though it had been slain", with seven horns and seven eyes, "which are the seven spirits of God" (5:6).</li>
+      <li>He takes the scroll from the right hand of the One on the throne (5:7), the scene of Daniel 7 fulfilled.</li>
+      <li><strong>Psalm 110:</strong> Christ now sits at God's right hand, "waiting from that time until his enemies should be made a footstool for his feet" (Hebrews 10:12–13). His reign over the earth is still to come.</li>
+      <li><strong>The prayers of the saints:</strong> the elders hold "golden bowls full of incense, which are the prayers of the saints" (5:8). The same prayers return in 8:3–5, just before the trumpets (an easy way to remember: 5:8 and 8:5). No prayer is forgotten, and prayer has a part in God's judgments.</li>
+      <li><strong>A new song (5:9–10):</strong> "by your blood you ransomed people for God from every tribe and language and people and nation". The gospel will reach every people group before He returns, though not necessarily every person, and Isaiah 66:19 pictures the message still going out to the nations after His return. Some manuscripts read "redeemed us" (as in the NKJV); "people" fits if the elders are angels.</li>
+      <li><strong>"They shall reign on the earth" (5:10):</strong> the saints' destiny is a restored earth, not only heaven. See the millennial reign on the timeline.</li>
+    </ul>
+    <h3>All creation worships (5:11–14)</h3>
+    <ul>
+      <li>"Myriads of myriads and thousands of thousands" of angels (5:11; Daniel 7:10) declare the Lamb worthy "to receive power and wealth and wisdom and might and honor and glory and blessing" (5:12).</li>
+      <li><strong>Wealth:</strong> it is part of the worship He is worthy to receive. That is not prosperity teaching: God uses money to reveal and win hearts, not because He needs it. Isaiah 60 pictures the wealth of the nations coming to Zion.</li>
+      <li>Then every creature in heaven, on earth, under the earth and in the sea joins in (5:13).</li>
+    </ul>
+  </section>
+
+  <section data-ch="6" data-parts="chrono" data-events="e04 e05">
+    <h2>The six seals</h2>
+    <p class="summary">The Lamb opens the seals one by one: conquest, war, famine, death, martyrdom and upheaval in the heavens. Jamie sees the first seal as the start of the Great Tribulation.</p>
+    <h3>How the judgments fit together</h3>
+    <ul>
+      <li><strong>In sequence:</strong> seals, then trumpets, then bowls, growing in severity. The seventh seal opens the seven trumpets (8:1–2), which argues against reading the three series as the same events told three times.</li>
+      <li><strong>The starting point:</strong> the first seal begins the Great Tribulation. The beast is given 42 months (13:5), and the abomination reveals him (Matthew 24:15; 2 Thessalonians 2:3–4). All of these point to one starting point.</li>
+      <li><strong>The four horsemen are angels</strong> God uses to bring judgment, as in Zechariah 6:1–8, where four chariots go out to "the four winds of heaven", and Daniel 7:2. Ezekiel 14:21 names the same four judgments: sword, famine, wild beasts and pestilence.</li>
+    </ul>
+    <h3>The seals</h3>
+    <div class="tbl"><table>
+      <tr><th>Seal</th><th>In the text</th><th>Notes</th></tr>
+      <tr><td>1st: white horse (6:1–2)</td><td>A rider with a bow is given a crown and goes out "conquering, and to conquer"</td><td>Ushers in the Antichrist's conquest of the world. This is not Jesus: the rider wears a victor's wreath (stephanos), while Jesus wears many royal crowns (diadems, 19:12), and this conquest brings war, famine and death</td></tr>
+      <tr><td>2nd: red horse (6:3–4)</td><td>Peace is taken from the earth, and people slay one another</td><td>Global war, worse than anything before it</td></tr>
+      <tr><td>3rd: black horse (6:5–6)</td><td>"A quart of wheat for a denarius" (a day's wage), but "do not harm the oil and wine"</td><td>Famine and economic collapse, following from war. Sparing the oil and wine may mean judgment on the wealthy is delayed until their sin is complete (compare Genesis 15:16)</td></tr>
+      <tr><td>4th: pale horse (6:7–8)</td><td>Death and Hades kill a fourth of the earth by sword, famine, pestilence and wild beasts</td><td>A fourth of today's world would be about 2 billion people</td></tr>
+      <tr><td>5th: the martyrs (6:9–11)</td><td>Souls under the altar cry, "how long before you will judge and avenge our blood on those who dwell on the earth?"</td><td>End-time martyrs, crying for justice on those still on the earth. They must wait until the number of martyrs is complete</td></tr>
+      <tr><td>6th: signs in the heavens (6:12–17)</td><td>A great earthquake; the sun black, the moon like blood, stars falling; people hide from "the wrath of the Lamb"</td><td>Read literally, like the plagues on Egypt: the Exodus on a global scale. People recognise where the judgments come from, but most still harden their hearts</td></tr>
+    </table></div>
+    <h3>Why does God allow the Antichrist's rise?</h3>
+    <p>God uses pressure to bring people to repentance, as throughout the book of Judges. In a sense He gives humanity the ruler it asks for, as when Israel demanded a king and got Saul (1 Samuel 8). The tribulation exposes people's choices, and it is the least severe way to bring many into the kingdom freely.</p>
+    <h3>Are believers the target?</h3>
+    <p>No. Like Israel in Goshen during the plagues, believers are preserved within the judgments, though they are deeply affected by them, as Lot was in Sodom. The wrath falls on those who choose the beast. Taking the mark is not an accident: it is tied to worshiping the beast (13:15–17; 14:9–11), even if the pressure to take it looks like ordinary compliance.</p>
+  </section>
+
+  <section data-ch="7" data-parts="paren" data-events="e05">
+    <h2>The 144,000 and the great multitude</h2>
+    <p class="summary">A pause in the story answers the question that ends chapter 6, "Who can stand?" God seals His servants, and John sees a multitude no one can count.</p>
+    <h3>A pause, not the next event</h3>
+    <p>Chapter 7 is parenthetical, a pause to explain. It does not happen between the sixth and seventh seals; it steps back to show who stands through the judgments.</p>
+    <h3>The sealing (7:1–3)</h3>
+    <ul>
+      <li>Four angels hold back the four winds of the earth, the same four winds as the horsemen of chapter 6 (Zechariah 6:5).</li>
+      <li>No harm may come "until we have sealed the servants of our God on their foreheads" (7:3). Believers are sealed with the Holy Spirit (Ephesians 1:13–14).</li>
+    </ul>
+    <h3>The 144,000 (7:4–8)</h3>
+    <ul>
+      <li><strong>Who:</strong> 12,000 from each of the twelve tribes of Israel. Jamie reads them as literal Jewish men, not a symbol.</li>
+      <li><strong>The same group</strong> stands with the Lamb on Mount Zion in chapter 14, singing a new song, called "firstfruits" (14:1–5). Jamie also links them with the woman protected in the wilderness in chapter 12, a case he will make when the class reaches chapters 12–14.</li>
+      <li><strong>Their role:</strong> a set-apart community of worship and prayer, renewing Israel's original calling to be "a kingdom of priests" (Exodus 19:4–6). This differs from the common teaching that they are Jewish evangelists left behind after a rapture.</li>
+    </ul>
+    <h3>The great multitude (7:9–17)</h3>
+    <ul>
+      <li>"A great multitude that no one could number, from every nation, from all tribes and peoples and languages" (7:9): the great end-time harvest.</li>
+      <li>"These are the ones coming out of the great tribulation. They have washed their robes and made them white in the blood of the Lamb" (7:14). Not all of them are necessarily martyrs.</li>
+      <li>"They shall hunger no more, neither thirst anymore… and God will wipe away every tear from their eyes" (7:16–17). This echoes Isaiah 49:10, a picture of life in the coming kingdom.</li>
+    </ul>
+  </section>
+
+  <section data-ch="8" data-parts="chrono" data-events="e05">
+    <h2>The seventh seal and the trumpets</h2>
+    <p class="summary">Heaven falls silent, and the prayers of the saints rise before God just before the trumpets sound. The class has covered 8:1–5 so far.</p>
+    <ul>
+      <li><strong>Silence in heaven "for about half an hour" (8:1):</strong> the first time the "holy, holy, holy" stops.</li>
+      <li>Seven angels are given seven trumpets (8:2).</li>
+      <li><strong>Prayer and judgment (8:3–5):</strong> an angel offers much incense "with the prayers of all the saints" on the golden altar, then fills the censer with fire from the altar and throws it on the earth. The prayers first seen in 5:8 now return as judgment. The church's prayer in the last days is part of how God brings justice and, at the seventh trumpet, the kingdom (11:15).</li>
+      <li><strong>Time in the age to come:</strong> "half an hour" in heaven, and the new moons and Sabbaths of Isaiah 66:22–23, suggest that time goes on in eternity.</li>
+    </ul>
+  </section>
+
+  <section data-ch="9" data-parts="chrono" data-events="e05"><h2>The fifth and sixth trumpets</h2></section>
+  <section data-ch="10" data-parts="paren" data-events="e05"><h2>The angel and the little scroll</h2></section>
+  <section data-ch="11" data-parts="paren:1–13 chrono:14–19" data-events="e03 e06"><h2>The two witnesses and the seventh trumpet</h2></section>
+  <section data-ch="12" data-parts="paren" data-events="e04 e05"><h2>The woman, the child and the dragon</h2></section>
+  <section data-ch="13" data-parts="paren" data-events="e03 e04 e05"><h2>The beast from the sea and the beast from the earth</h2></section>
+  <section data-ch="14" data-parts="paren" data-events="e05 e07"><h2>The Lamb on Mount Zion and the harvest of the earth</h2></section>
+  <section data-ch="15" data-parts="chrono" data-events="e05"><h2>Seven angels with the last plagues</h2></section>
+  <section data-ch="16" data-parts="chrono" data-events="e05 e07"><h2>The seven bowls</h2></section>
+  <section data-ch="17" data-parts="paren" data-events="e05"><h2>Babylon and the beast</h2></section>
+  <section data-ch="18" data-parts="paren" data-events="e05"><h2>The fall of Babylon</h2></section>
+  <section data-ch="19" data-parts="paren:1–10 chrono:11–21" data-events="e06 e07 e09"><h2>The marriage of the Lamb and the rider on the white horse</h2></section>
+  <section data-ch="20" data-parts="chrono" data-events="e11 e12 e13 e14"><h2>The thousand years and the great white throne</h2></section>
+  <section data-ch="21" data-parts="chrono:1–8 paren:9–27" data-events="e15"><h2>New heavens, new earth and New Jerusalem</h2></section>
+  <section data-ch="22" data-parts="paren:1–5 epilogue:6–21" data-events="e15"><h2>The river of life and "I am coming soon"</h2></section>
+</template>
+
 <script>
-const DATA = {"events": [{"id": "e01", "title": "First coming", "period": "First coming", "cat": "event", "refs": "Isa 53; Dan 9:25–26; 1 Cor 15:3–4; Acts 1:9–11", "summary": "Christ's birth, ministry, death, resurrection and ascension fulfil the first-coming prophecies and set up everything that follows.", "body": "<h3>What happened<\/h3><ul><li><strong>Birth:<\/strong> born of a virgin in Bethlehem (Isaiah 7:14; Micah 5:2; Matthew 1–2; Luke 2).<\/li><li><strong>Ministry:<\/strong> He announced that the kingdom of God was at hand (Mark 1:14–15) and showed its power in His miracles (Matthew 12:28).<\/li><li><strong>Death:<\/strong> He died as the atoning sacrifice for sin (Isaiah 53; 1 Corinthians 15:3–4).<\/li><li><strong>Resurrection:<\/strong> He rose as the \"firstfruits\" of the resurrection (1 Corinthians 15:20–23).<\/li><li><strong>Ascension:<\/strong> He ascended, with the angels promising that \"this Jesus… will come in the same way\" (Acts 1:9–11).<\/li><\/ul><h3>Why it matters for the timeline<\/h3><p>Daniel's prophecy counts 69 \"weeks\" of years up to the Messiah, who is then \"cut off\" (Daniel 9:25–26). Premillennialists see a gap after that point: the 70th week is still future.<\/p><p>The resurrection order also starts here: \"Christ the firstfruits, then at his coming those who belong to Christ. Then comes the end\" (1 Corinthians 15:23–24). Each later resurrection on this timeline follows that order.<\/p><p>The kingdom is already present in a spiritual sense (Colossians 1:13), but its full, visible form waits for His return. In the parable of the minas, a nobleman goes away to receive a kingdom and then returns to rule (Luke 19:11–27).<\/p><h3>Prophecies split across two comings<\/h3><div class=\"tbl\"><table><tr><th>Fulfilled at the first coming<\/th><th>Awaiting the second coming<\/th><\/tr><tr><td>\"For to us a child is born\" (Isaiah 9:6a)<\/td><td>\"The government shall be upon his shoulder\" (Isaiah 9:6b–7)<\/td><\/tr><tr><td>\"The year of the Lord's favor\" (Isaiah 61:1–2a). Jesus stopped reading mid-verse (Luke 4:18–21)<\/td><td>\"The day of vengeance of our God\" (Isaiah 61:2b)<\/td><\/tr><tr><td>Lowly, riding on a donkey (Zechariah 9:9)<\/td><td>His feet stand on the Mount of Olives (Zechariah 14:4)<\/td><\/tr><tr><td>Messiah \"cut off\" (Daniel 9:26)<\/td><td>The Son of Man given everlasting dominion (Daniel 7:13–14)<\/td><\/tr><\/table><\/div>"}, {"id": "e02", "title": "Church age", "period": "Church age", "cat": "event", "refs": "Acts 2; Matt 24:4–14; Rom 11:25; 1 Thess 5:1–6", "summary": "The present age between Pentecost and the 70th week: the gospel goes to the nations, Israel is partly hardened, and the \"birth pains\" build.", "body": "<h3>What defines this age<\/h3><ul><li><strong>The church is born<\/strong> at Pentecost (Acts 2; Matthew 16:18).<\/li><li><strong>The mission:<\/strong> the gospel goes to every nation, \"and then the end will come\" (Matthew 24:14; 28:18–20; Acts 1:8).<\/li><li><strong>Israel:<\/strong> \"a partial hardening has come upon Israel, until the fullness of the Gentiles has come in\" (Romans 11:25). Jerusalem is \"trampled underfoot by the Gentiles, until the times of the Gentiles are fulfilled\" (Luke 21:24).<\/li><li><strong>Birth pains:<\/strong> false christs, wars, famines and earthquakes. These are \"but the beginning of the birth pains\", and \"the end is not yet\" (Matthew 24:4–8).<\/li><li><strong>Apostasy:<\/strong> the \"rebellion comes first\" (2 Thessalonians 2:3; 1 Timothy 4:1; 2 Timothy 3:1–5).<\/li><\/ul><h3>The post-trib emphasis: watch and endure<\/h3><p>In this view, the church is told to watch and endure, not to expect removal before the trouble (Matthew 24:13, 42–44). Paul tells believers the day of the Lord will not \"surprise you like a thief\". The reason is that they are awake and watching, not that they are absent (1 Thessalonians 5:1–6).<\/p><h3>Jesus' signs and the seals of Revelation 6<\/h3><p>Many interpreters see Revelation 6 following the same order as Jesus' Olivet Discourse. Post-tribulationists differ on whether the seals begin before or inside the 70th week.<\/p><div class=\"tbl\"><table><tr><th>Olivet Discourse (Matthew 24)<\/th><th>Seal (Revelation 6)<\/th><\/tr><tr><td>False christs (24:5)<\/td><td>1st seal: white horse, a conqueror (6:1–2)<\/td><\/tr><tr><td>Wars (24:6–7)<\/td><td>2nd seal: red horse, peace taken (6:3–4)<\/td><\/tr><tr><td>Famines (24:7)<\/td><td>3rd seal: black horse, scarcity (6:5–6)<\/td><\/tr><tr><td>Pestilence, death (Luke 21:11)<\/td><td>4th seal: pale horse, death (6:7–8)<\/td><\/tr><tr><td>Persecution, martyrdom (24:9)<\/td><td>5th seal: souls of martyrs (6:9–11)<\/td><\/tr><tr><td>Sun darkened, stars fall (24:29)<\/td><td>6th seal: cosmic upheaval (6:12–17)<\/td><\/tr><\/table><\/div>"}, {"id": "e03", "title": "70th week begins", "period": "70th week", "cat": "tribulation", "refs": "Dan 9:24–27; Dan 7:24–25; 2 Thess 2:3–4; Rev 13:1–8", "summary": "The final seven years of Daniel's prophecy begin when \"the prince who is to come\" makes \"a strong covenant with many\".", "body": "<h3>Daniel's seventy weeks<\/h3><p>Daniel 9:24–27 decrees seventy \"weeks\", meaning seventy sevens of years, for Israel and Jerusalem.<\/p><div class=\"tbl\"><table><tr><th>Period<\/th><th>Length<\/th><th>What it covers<\/th><\/tr><tr><td>7 weeks<\/td><td>49 years<\/td><td>Jerusalem rebuilt \"in a troubled time\" (9:25)<\/td><\/tr><tr><td>62 weeks<\/td><td>434 years<\/td><td>Up to the Messiah, who is then \"cut off\" (9:25–26)<\/td><\/tr><tr><td>Gap<\/td><td>Church age<\/td><td>City and sanctuary destroyed (AD 70); wars continue (9:26)<\/td><\/tr><tr><td>1 week<\/td><td>7 years<\/td><td>Covenant confirmed, broken at the midpoint, ending in judgment (9:27)<\/td><\/tr><\/table><\/div><p>The 70 weeks aim to finish transgression, end sins, make reconciliation, bring everlasting righteousness, seal up the vision, and anoint the most holy (9:24). Premillennialists note these are not yet fully true for Israel, so the final week must still be future.<\/p><h3>Who makes the covenant?<\/h3><p>The \"he\" of 9:27 is read as \"the prince who is to come\" from 9:26. He comes from the people who destroyed the city (Rome, AD 70). Other interpreters read \"he\" as the Messiah.<\/p><p>This ruler appears throughout Scripture:<\/p><ul><li><strong>Daniel:<\/strong> the little horn (Daniel 7:8, 24–25) and the willful king (Daniel 11:36–45).<\/li><li><strong>Paul:<\/strong> the man of lawlessness (2 Thessalonians 2:3–4).<\/li><li><strong>Revelation:<\/strong> the beast from the sea (Revelation 13:1–8).<\/li><li><strong>John:<\/strong> the antichrist (1 John 2:18).<\/li><\/ul><h3>Other features<\/h3><ul><li>Temple worship is functioning, since sacrifice is stopped at the midpoint (Daniel 9:27; Revelation 11:1–2).<\/li><li>The two witnesses prophesy 1,260 days (Revelation 11:3–6). Interpreters debate whether that is the first or second half.<\/li><\/ul><h3>Post-trib notes<\/h3><p>The church is present on earth. The start of the week may not be obvious when it happens. The sign Jesus told believers to watch for is the abomination at the midpoint (Matthew 24:15).<\/p>"}, {"id": "e04", "title": "Abomination of desolation", "period": "70th week", "cat": "tribulation", "refs": "Dan 9:27; 11:31; 12:11; Matt 24:15–22; 2 Thess 2:3–4; Rev 13:14–15", "summary": "At the midpoint, the ruler breaks the covenant, stops the sacrifice and sets up an idolatrous desecration in the holy place. Jesus named it as THE sign to flee.", "body": "<h3>The key texts<\/h3><ul><li><strong>Daniel:<\/strong> the covenant broken mid-week and sacrifice stopped (9:27); the abomination set up (11:31; 12:11).<\/li><li><strong>Jesus:<\/strong> \"When you see the abomination of desolation… standing in the holy place… then let those who are in Judea flee to the mountains\" (Matthew 24:15–22; Mark 13:14–20). A \"great tribulation\" follows, \"such as has not been from the beginning of the world until now\", and those days are shortened for the elect's sake.<\/li><li><strong>Paul:<\/strong> the man of lawlessness \"takes his seat in the temple of God, proclaiming himself to be God\". The day of Christ will not come until this happens (2 Thessalonians 2:3–4).<\/li><li><strong>Revelation:<\/strong> an image of the beast that speaks; worship and the mark are enforced (Revelation 13:14–18).<\/li><\/ul><h3>Past patterns and the final fulfilment<\/h3><ul><li><strong>Antiochus IV Epiphanes (167 BC)<\/strong> set up an altar to Zeus in the temple and sacrificed swine on it. This is the pattern behind Daniel 11:31.<\/li><li><strong>AD 70:<\/strong> Jerusalem was surrounded by armies and the temple destroyed (Luke 21:20). This was a partial fulfilment.<\/li><li><strong>Still future:<\/strong> Jesus spoke of the abomination as future even after Antiochus.<\/li><\/ul><h3>The numbers Daniel gives<\/h3><div class=\"tbl\"><table><tr><th>Number<\/th><th>Text<\/th><th>Common reading<\/th><\/tr><tr><td>1,260 days, 42 months, \"time, times and half a time\"<\/td><td>Daniel 7:25; 12:7; Revelation 11:2–3; 12:6, 14; 13:5<\/td><td>The second half of the week: the Great Tribulation<\/td><\/tr><tr><td>1,290 days<\/td><td>Daniel 12:11<\/td><td>From the abomination; 30 extra days, often linked to judgments after the return<\/td><\/tr><tr><td>1,335 days<\/td><td>Daniel 12:12<\/td><td>\"Blessed is he who waits\"; 45 more days, often linked to the kingdom being set up<\/td><\/tr><\/table><\/div><h3>Why it matters in the post-trib view<\/h3><p>This is the visible marker. Paul ties \"our being gathered together to him\" to the time after the man of lawlessness is revealed (2 Thessalonians 2:1–4). So the church sees this event before the rapture.<\/p>"}, {"id": "e05", "title": "Great Tribulation", "period": "70th week", "cat": "tribulation", "refs": "Matt 24:21–29; Dan 12:1; Rev 12–18; Jer 30:7", "summary": "The final 3½ years: unequalled distress, the beast's war on the saints, and God's judgments poured out on the world.", "body": "<h3>Length and character<\/h3><ul><li><strong>Length:<\/strong> 42 months, or 1,260 days (Revelation 13:5; 12:6).<\/li><li><strong>Severity:<\/strong> a time of trouble \"such as never has been\" (Daniel 12:1; Matthew 24:21).<\/li><li><strong>Israel:<\/strong> it is \"a time of distress for Jacob; yet he shall be saved out of it\" (Jeremiah 30:7). Israel is refined (Zechariah 13:8–9), and the woman is protected in the wilderness (Revelation 12:6, 14).<\/li><\/ul><h3>Two kinds of wrath (the key post-trib distinction)<\/h3><div class=\"tbl\"><table><tr><th><\/th><th>Wrath of Satan and the beast<\/th><th>Wrath of God<\/th><\/tr><tr><td>Aimed at<\/td><td>The saints (Revelation 12:12, 17; 13:7; Daniel 7:21, 25)<\/td><td>The ungodly who take the mark (Revelation 14:9–11; 16:2)<\/td><\/tr><tr><td>Believers' experience<\/td><td>Persecution and martyrdom (Revelation 13:10; 14:12–13; 20:4)<\/td><td>Protected from it; God \"has not destined us for wrath\" (1 Thessalonians 5:9)<\/td><\/tr><\/table><\/div><p>Post-tribulationists argue God protects His people <em>through<\/em> His judgments, not by removing them:<\/p><ul><li>Israel in Goshen was spared the plagues (Exodus 8:22–23; 9:26).<\/li><li>God's servants are sealed and not harmed (Revelation 7:3; 9:4).<\/li><li>\"I will keep you from the hour of trial\" (Revelation 3:10) uses the same phrase as John 17:15: \"I do not ask that you take them out of the world, but that you keep them from the evil one.\"<\/li><\/ul><h3>The judgments<\/h3><div class=\"tbl\"><table><tr><th>Series<\/th><th>Texts<\/th><th>Summary<\/th><\/tr><tr><td>Seven seals<\/td><td>Revelation 6; 8:1<\/td><td>Conquest, war, famine, death, martyrs, cosmic upheaval<\/td><\/tr><tr><td>Seven trumpets<\/td><td>Revelation 8–9; 11:15–19<\/td><td>A third of creation struck; demonic plagues; the 7th trumpet announces the kingdom<\/td><\/tr><tr><td>Seven bowls<\/td><td>Revelation 16<\/td><td>Final, complete judgments on the beast's kingdom<\/td><\/tr><tr><td>Fall of Babylon<\/td><td>Revelation 17–18<\/td><td>The world system of commerce and false religion destroyed<\/td><\/tr><\/table><\/div><h3>Who are \"the elect\"?<\/h3><p>The elect are present in the tribulation (Matthew 24:22, 24, 31), and saints are overcome by the beast (Revelation 13:7). Post-tribulationists read both as the church.<\/p><h3>How it ends<\/h3><p>\"Immediately after the tribulation of those days\", the sun and moon are darkened (Matthew 24:29; Joel 2:31; Revelation 6:12–17). Then the sign of the Son of Man appears.<\/p>"}, {"id": "e06", "title": "Second coming and rapture", "period": "At His return", "cat": "event", "refs": "Matt 24:29–31; 1 Thess 4:13–18; 1 Cor 15:51–52; 2 Thess 1:7–10; Rev 19:11–16", "summary": "One event: Christ returns visibly after the tribulation. The dead in Christ rise, living believers are changed and caught up to meet Him, and they return with Him to earth.", "body": "<h3>The return<\/h3><ul><li>Every eye will see Him (Revelation 1:7; Matthew 24:30).<\/li><li>He comes in the same way He left (Acts 1:11).<\/li><li>His feet stand on the Mount of Olives (Zechariah 14:4).<\/li><li>He rides a white horse as King of kings (Revelation 19:11–16).<\/li><li>The same \"day\" brings rest to believers and vengeance on the disobedient (2 Thessalonians 1:6–10).<\/li><\/ul><h3>The rapture<\/h3><ul><li>\"The Lord himself will descend from heaven… with the sound of the trumpet of God. And the dead in Christ will rise first. Then we who are alive… will be caught up together with them in the clouds to meet the Lord in the air\" (1 Thessalonians 4:16–17).<\/li><li>\"At the last trumpet… the dead will be raised imperishable, and we shall be changed\" (1 Corinthians 15:51–52).<\/li><li>Believers receive bodies like His glorious body (Philippians 3:20–21; 1 John 3:2).<\/li><\/ul><h3>Why post-tribulationists see one event<\/h3><div class=\"tbl\"><table><tr><th>Argument<\/th><th>Texts<\/th><\/tr><tr><td>The gathering comes \"immediately after the tribulation\"<\/td><td>Matthew 24:29–31<\/td><\/tr><tr><td>The \"last trumpet\" is the trumpet of the return<\/td><td>1 Corinthians 15:52; Matthew 24:31; Revelation 11:15<\/td><\/tr><tr><td>The gathering comes after the man of lawlessness is revealed<\/td><td>2 Thessalonians 2:1–4<\/td><\/tr><tr><td>The same words describe the coming the church waits for: parousia, apokalypsis, epiphaneia<\/td><td>1 Thessalonians 4:15; 2 Thessalonians 2:8; 1 Corinthians 1:7; Titus 2:13<\/td><\/tr><tr><td>The \"first resurrection\" includes tribulation martyrs, so the resurrection of believers comes after the tribulation<\/td><td>Revelation 20:4–6<\/td><\/tr><tr><td>\"Meet\" (apantēsis) means going out to welcome an arriving dignitary and escorting him back<\/td><td>Acts 28:15; Matthew 25:6<\/td><\/tr><\/table><\/div><h3>Israel's repentance<\/h3><p>Israel looks on Him \"whom they have pierced\" and mourns (Zechariah 12:10). \"All Israel will be saved, as it is written, 'The Deliverer will come from Zion'\" (Romans 11:26). Jesus said Jerusalem would not see Him again until it says, \"Blessed is he who comes in the name of the Lord\" (Matthew 23:39).<\/p><h3>Main objections and post-trib replies<\/h3><ul><li><strong>Imminence (\"concerning that day and hour no one knows\"):<\/strong> the post-trib reply is that the command is to watch for signs, and the day is still unknown (Matthew 24:32–44).<\/li><li><strong>Revelation 3:10 (\"I will keep you from the hour of trial\"):<\/strong> the reply is that this means protection through it, as in John 17:15.<\/li><li><strong>The word \"church\" is absent in Revelation 4–18:<\/strong> the reply is that \"saints\", \"servants\" and \"brethren\" are there throughout.<\/li><\/ul>"}, {"id": "e07", "title": "Battle of Armageddon", "period": "At His return", "cat": "event", "refs": "Rev 16:12–16; 19:11–21; Zech 14:1–5; Joel 3:9–16; 2 Thess 2:8", "summary": "The armies gathered by the beast against Christ are destroyed at His coming. The beast and false prophet are thrown alive into the lake of fire.", "body": "<h3>The gathering<\/h3><ul><li>The Euphrates dries up, and demonic spirits gather the kings of the world to \"the place that in Hebrew is called Armageddon\" (Revelation 16:12–16). Har-Megiddo means \"mountain of Megiddo\", above the Jezreel Valley.<\/li><li>The nations gather against Jerusalem (Zechariah 12:2–9; 14:1–3) and in the \"Valley of Jehoshaphat\" (Joel 3:2, 9–16).<\/li><\/ul><h3>The battle<\/h3><ul><li>Christ comes with the armies of heaven. His robe is dipped in blood, and a sharp sword comes from His mouth (Revelation 19:11–16).<\/li><li>Those with Him are \"called and chosen and faithful\" (Revelation 17:14; Jude 14; Zechariah 14:5). In the post-trib view, the just-raptured saints are part of this army.<\/li><li>The lawless one is killed \"with the breath of his mouth\" and brought \"to nothing by the appearance of his coming\" (2 Thessalonians 2:8).<\/li><li>The beast and false prophet are cast alive into the lake of fire. The rest are slain, and birds gather for \"the great supper of God\" (Revelation 19:17–21). This is a grim contrast to the marriage supper.<\/li><li>The winepress of God's wrath (Isaiah 63:1–6; Revelation 14:19–20).<\/li><\/ul><h3>Places named<\/h3><div class=\"tbl\"><table><tr><th>Place<\/th><th>Text<\/th><th>Role<\/th><\/tr><tr><td>Armageddon (Megiddo)<\/td><td>Revelation 16:16<\/td><td>Where the armies assemble<\/td><\/tr><tr><td>Valley of Jehoshaphat<\/td><td>Joel 3:2, 12<\/td><td>Where God judges the nations<\/td><\/tr><tr><td>Jerusalem<\/td><td>Zechariah 12:2–9; 14:2<\/td><td>The city under siege<\/td><\/tr><tr><td>Bozrah, Edom<\/td><td>Isaiah 63:1<\/td><td>The Lord comes from here with garments stained red<\/td><\/tr><tr><td>Mount of Olives<\/td><td>Zechariah 14:4<\/td><td>Where His feet touch down<\/td><\/tr><\/table><\/div>"}, {"id": "e08", "title": "Judgment seat of Christ", "period": "At His return", "cat": "judgment", "refs": "2 Cor 5:9–10; Rom 14:10–12; 1 Cor 3:10–15; 1 Cor 4:5; Rev 22:12", "summary": "Believers stand before Christ to have their lives evaluated. This decides rewards, not salvation.", "body": "<h3>The name<\/h3><p>\"Judgment seat\" translates the Greek <em>bēma<\/em>, a raised platform where an official sat to give rulings. Paul was brought before Gallio's bēma in Corinth (Acts 18:12–17). The word also brings to mind the platform at the athletic games where prizes were awarded (1 Corinthians 9:24–27).<\/p><h3>Key passages<\/h3><ul><li>\"We must all appear before the judgment seat of Christ, so that each one may receive what is due for what he has done in the body, whether good or evil\" (2 Corinthians 5:9–10).<\/li><li>\"We will all stand before the judgment seat of God… each of us will give an account of himself to God\" (Romans 14:10–12). It is the same seat: the Father \"has given all judgment to the Son\" (John 5:22).<\/li><li>The test by fire (1 Corinthians 3:10–15), covered below.<\/li><li>\"Do not pronounce judgment before the time, before the Lord comes\", who will \"disclose the purposes of the heart\" (1 Corinthians 4:5).<\/li><li>Supporting texts: Matthew 16:27; Luke 14:14; Revelation 11:18; Revelation 22:12.<\/li><\/ul><h3>Who is judged, and what is evaluated<\/h3><p>Only believers are judged here, and their salvation is not in question: \"There is therefore now no condemnation for those who are in Christ Jesus\" (Romans 8:1; John 5:24). This is a believer's account of their stewardship before their Lord, not a criminal trial.<\/p><p>Christ evaluates three things:<\/p><ul><li><strong>Works:<\/strong> \"whether good or evil\". The word translated \"evil\" (phaulos) carries the sense of worthless or base.<\/li><li><strong>Motives:<\/strong> \"the purposes of the heart\" (1 Corinthians 4:5; Matthew 6:1–6).<\/li><li><strong>Faithfulness<\/strong> with what each person was given (1 Corinthians 4:2). The parables of the talents and the minas picture this (Matthew 25:14–30; Luke 19:11–27).<\/li><\/ul><h3>The test by fire (1 Corinthians 3:10–15)<\/h3><p>Christ is the only foundation. Each believer builds on it with gold, silver and precious stones, which last, or with wood, hay and straw, which burn. \"The fire will test what sort of work each one has done.\" If the work survives, the builder receives a reward. If it burns, the builder \"will suffer loss, though he himself will be saved, but only as through fire.\"<\/p><h3>Rewards and loss<\/h3><div class=\"tbl\"><table><tr><th>Crown<\/th><th>Given for<\/th><th>Text<\/th><\/tr><tr><td>Imperishable crown<\/td><td>Self-discipline<\/td><td>1 Corinthians 9:25<\/td><\/tr><tr><td>Crown of boasting (rejoicing)<\/td><td>Those won to Christ<\/td><td>1 Thessalonians 2:19<\/td><\/tr><tr><td>Crown of righteousness<\/td><td>Loving His appearing<\/td><td>2 Timothy 4:8<\/td><\/tr><tr><td>Crown of life<\/td><td>Enduring trials, faithful to death<\/td><td>James 1:12; Revelation 2:10<\/td><\/tr><tr><td>Unfading crown of glory<\/td><td>Faithful shepherding<\/td><td>1 Peter 5:4<\/td><\/tr><\/table><\/div><p>Rewards also include <strong>authority to reign<\/strong> with Christ: \"you shall have authority over ten cities\" (Luke 19:17; Revelation 2:26–27; 2 Timothy 2:12). In Revelation 4:10 the elders cast their crowns before the throne.<\/p><p>A believer can also <strong>lose<\/strong> reward (1 Corinthians 3:15; 2 John 8) and \"shrink from him in shame at his coming\" (1 John 2:28).<\/p><h3>Timing in the post-trib view<\/h3><p>Rewards are tied to the return and the resurrection: \"You will be repaid at the resurrection of the just\" (Luke 14:14; 1 Corinthians 4:5; Revelation 11:18; 22:12). So the Bema comes at or right after the second coming, and the rewards take effect as roles in the millennial kingdom.<\/p><p>Pre-tribulationists place it in heaven during the seven years. Many amillennial and Reformed interpreters see one general judgment, where the Bema and the great white throne are one event.<\/p><h3>Why Paul brings it up<\/h3><p>Paul uses the Bema to motivate, not to frighten. \"We make it our aim to please him\" (2 Corinthians 5:9). It gives reasons to stop judging fellow believers (Romans 14:10) and to run the race to win (1 Corinthians 9:24).<\/p>"}, {"id": "e09", "title": "Marriage supper of the Lamb", "period": "At His return", "cat": "event", "refs": "Rev 19:7–9; Isa 25:6–9; Matt 8:11; 26:29; Luke 22:16–30", "summary": "The celebration of Christ's union with His bride. It is announced just before the return, and post-tribulationists usually place the feast on earth as the Millennium begins.", "body": "<h3>The announcement<\/h3><p>\"The marriage of the Lamb has come, and his Bride has made herself ready.\" She is clothed in fine linen, which \"is the righteous deeds of the saints\". \"Blessed are those who are invited to the marriage supper of the Lamb\" (Revelation 19:7–9). The bride's clothing connects to the judgment seat of Christ.<\/p><h3>The Jewish wedding pattern<\/h3><div class=\"tbl\"><table><tr><th>Stage<\/th><th>Custom<\/th><th>Fulfilment<\/th><\/tr><tr><td>Betrothal<\/td><td>Legally binding; a bride price paid<\/td><td>The church betrothed to Christ (2 Corinthians 11:2); bought with a price (1 Corinthians 6:20)<\/td><\/tr><tr><td>Preparation<\/td><td>The groom prepares a place in his father's house<\/td><td>\"I go to prepare a place for you\" (John 14:2–3)<\/td><\/tr><tr><td>Coming<\/td><td>The groom comes with a shout to fetch the bride<\/td><td>\"Here is the bridegroom! Come out to meet him.\" (Matthew 25:6)<\/td><\/tr><tr><td>Feast<\/td><td>Celebration with invited guests<\/td><td>The marriage supper (Revelation 19:9)<\/td><\/tr><\/table><\/div><h3>Who is the bride?<\/h3><ul><li><strong>The church<\/strong> (Ephesians 5:25–32; 2 Corinthians 11:2).<\/li><li><strong>New Jerusalem<\/strong> is also called the bride (Revelation 21:2, 9–10): the people together with their dwelling.<\/li><li><strong>Guests:<\/strong> some distinguish guests, such as Old Testament saints, from the bride. John the Baptist calls himself \"the friend of the bridegroom\" (John 3:29). Others see the same people pictured in different ways.<\/li><\/ul><h3>Timing<\/h3><p>Revelation 19:7 announces the wedding has come, and the feast itself fits Jesus' kingdom sayings:<\/p><ul><li>Many will \"recline at table with Abraham… in the kingdom of heaven\" (Matthew 8:11; Luke 13:29).<\/li><li>\"I will not drink again of this fruit of the vine until that day when I drink it new with you in my Father's kingdom\" (Matthew 26:29).<\/li><li>He will not eat the Passover again \"until it is fulfilled in the kingdom of God\"; the disciples will eat and drink at His table (Luke 22:16–18, 30).<\/li><li>\"On this mountain the Lord of hosts will make for all peoples a feast\", and \"he will swallow up death forever\" (Isaiah 25:6–9).<\/li><\/ul><p><strong>Views differ:<\/strong> most post-tribulationists place the feast on earth as the Millennium begins. Others say it happens in heaven, spans the whole Millennium, or belongs to the eternal state.<\/p><h3>Related parables<\/h3><ul><li>The wedding feast and the guest without a wedding garment (Matthew 22:1–14).<\/li><li>The ten virgins, about being ready (Matthew 25:1–13).<\/li><\/ul>"}, {"id": "e10", "title": "Judgment of the nations", "period": "At His return", "cat": "judgment", "refs": "Matt 25:31–46; Joel 3:1–2; Ezek 20:33–38", "summary": "When the Son of Man sits on His glorious throne, the living nations are gathered and separated: sheep inherit the kingdom, goats go to everlasting fire.", "body": "<h3>The scene (Matthew 25:31–46)<\/h3><ul><li><strong>Timing:<\/strong> \"When the Son of Man comes in his glory… then he will sit on his glorious throne\" (25:31).<\/li><li><strong>Who:<\/strong> \"all the nations\", the people alive on earth at His return.<\/li><li><strong>The separation:<\/strong> sheep on His right, goats on His left.<\/li><li><strong>The basis:<\/strong> how they treated \"the least of these my brothers\". This is evidence of faith, not salvation by works.<\/li><li><strong>The outcomes:<\/strong> \"Inherit the kingdom prepared for you\" versus \"the eternal fire prepared for the devil and his angels\".<\/li><\/ul><h3>Who are \"my brothers\"?<\/h3><ul><li><strong>Most post-trib and historic premillennial readers:<\/strong> Jesus' disciples (Matthew 12:48–50; 28:10), especially persecuted believers in the tribulation.<\/li><li><strong>Dispensationalists:<\/strong> often the Jewish people.<\/li><\/ul><h3>Related judgments at the start of the kingdom<\/h3><ul><li>The nations are judged in the valley of Jehoshaphat for how they treated Israel (Joel 3:1–2).<\/li><li>Israel is purged: rebels are removed and the rest enter the land (Ezekiel 20:33–38; Zechariah 13:8–9).<\/li><\/ul><h3>The post-trib puzzle: who enters the Millennium in mortal bodies?<\/h3><p>If every believer is raptured and glorified at the return, who repopulates the earth? Two main answers:<\/p><ul><li><strong>Those who turn at His appearing:<\/strong> Jews who look on the One they pierced (Zechariah 12:10; Romans 11:26), plus Gentiles spared at the separation, enter in natural bodies.<\/li><li><strong>A general judgment:<\/strong> some read Matthew 25 as a picture of the final, general judgment rather than a separate event at the start of the Millennium.<\/li><\/ul><p><em>Medium confidence:<\/em> post-tribulationists are not united on this question.<\/p><h3>Compared with the judgment seat of Christ<\/h3><div class=\"tbl\"><table><tr><th><\/th><th>Judgment seat of Christ<\/th><th>Judgment of the nations<\/th><\/tr><tr><td>Who<\/td><td>Resurrected and raptured believers<\/td><td>Living people on earth at the return<\/td><\/tr><tr><td>Question<\/td><td>Rewards for faithfulness<\/td><td>Entry into the kingdom or exclusion<\/td><\/tr><tr><td>Text<\/td><td>2 Corinthians 5:10<\/td><td>Matthew 25:31–46<\/td><\/tr><\/table><\/div>"}, {"id": "e11", "title": "Satan bound, first resurrection", "period": "Millennium", "cat": "event", "refs": "Rev 20:1–6; Isa 24:21–22; 1 Cor 15:23; Dan 12:2; John 5:28–29", "summary": "Satan is locked in the abyss for a thousand years, and the saints, including the tribulation martyrs, are raised to reign with Christ.", "body": "<h3>Satan bound (Revelation 20:1–3)<\/h3><p>An angel with the key of the abyss and a great chain binds Satan, casts him into the pit and seals it, \"so that he might not deceive the nations any longer, until the thousand years were ended\". After that \"he must be released for a little while\".<\/p><p>Isaiah 24:21–22 describes a similar scene: the host on high punished and shut up in prison, \"and after many days they will be punished\".<\/p><p><strong>Premillennial reading:<\/strong> Satan is plainly still deceiving now. He blinds minds (2 Corinthians 4:4), prowls like a lion (1 Peter 5:8), and works in the disobedient (Ephesians 2:2). So the binding is future. Amillennialists connect it to Christ binding \"the strong man\" at His first coming (Matthew 12:29).<\/p><h3>The first resurrection (Revelation 20:4–6)<\/h3><ul><li>John sees thrones, with judgment given to those seated on them.<\/li><li>He sees the souls of those beheaded for their witness, who refused the beast and his mark: \"they came to life and reigned with Christ for a thousand years\".<\/li><li>\"The rest of the dead did not come to life until the thousand years were ended. This is the first resurrection.\"<\/li><li>\"Blessed and holy is the one who shares in the first resurrection! Over such the second death has no power, but they will be priests of God and of Christ.\"<\/li><\/ul><h3>The order of resurrection<\/h3><div class=\"tbl\"><table><tr><th>Stage<\/th><th>Who<\/th><th>Texts<\/th><\/tr><tr><td>Firstfruits<\/td><td>Christ<\/td><td>1 Corinthians 15:20–23<\/td><\/tr><tr><td>First resurrection: \"resurrection of the just\", \"of life\"<\/td><td>Those who are Christ's, at His coming, including tribulation martyrs<\/td><td>1 Corinthians 15:23; 1 Thessalonians 4:16; Luke 14:14; Revelation 20:4–6<\/td><\/tr><tr><td>Second resurrection: \"of judgment\"<\/td><td>\"The rest of the dead\", after the 1,000 years<\/td><td>Revelation 20:5, 12–13; John 5:28–29; Daniel 12:2; Acts 24:15<\/td><\/tr><\/table><\/div><h3>Why \"came to life\" means bodily resurrection both times<\/h3><p>Revelation 20:4–5 uses the same verb (ezēsan, \"came to life\") for both groups. The 19th-century scholar Henry Alford argued that if the first \"coming to life\" is spiritual and the second bodily, the passage's language stops meaning anything. This is a standard premillennial argument.<\/p><h3>Who reigns<\/h3><p>The saints reign: Daniel 7:22, 27; 1 Corinthians 6:2; 2 Timothy 2:12; Revelation 5:10; 20:6.<\/p>"}, {"id": "e12", "title": "Millennial reign of Christ", "period": "Millennium", "cat": "event", "refs": "Rev 20:4–6; Isa 2:2–4; 11:1–10; 65:17–25; Zech 14:9, 16–21; Ps 72", "summary": "For 1,000 years Christ rules the earth from Jerusalem with His glorified saints. Peace, justice and a renewed creation fill the world, while mortal survivors live, multiply, and still need a new heart.", "body": "<h3>Life in the kingdom<\/h3><div class=\"tbl\"><table><tr><th>Aspect<\/th><th>What Scripture describes<\/th><th>Key texts<\/th><\/tr><tr><td>Christ's government<\/td><td>King over all the earth, ruling from Zion with a rod of iron<\/td><td>Psalm 2:6–9; Isaiah 9:6–7; 24:23; Zechariah 14:9; Revelation 12:5; 19:15<\/td><\/tr><tr><td>The saints' rule<\/td><td>Reigning with Christ; apostles over the twelve tribes; faithful servants over cities<\/td><td>Revelation 5:10; 20:4–6; Matthew 19:28; Luke 19:17; 1 Corinthians 6:2<\/td><\/tr><tr><td>Israel restored<\/td><td>Regathered, given a new heart, one nation under \"David their king\"<\/td><td>Ezekiel 36–37; Jeremiah 31:31–40; Amos 9:11–15; Romans 11:26; Acts 1:6; 3:21<\/td><\/tr><tr><td>Worldwide worship<\/td><td>Nations stream to Jerusalem; the Feast of Tabernacles is kept<\/td><td>Isaiah 2:2–3; Zechariah 8:20–23; 14:16–19; Isaiah 66:23<\/td><\/tr><tr><td>Peace and justice<\/td><td>Swords into plowshares; everyone under their own vine and fig tree<\/td><td>Isaiah 2:4; 11:3–5; Micah 4:3–4; Psalm 72<\/td><\/tr><tr><td>Creation renewed<\/td><td>Wolf with lamb; desert blossoms; abundant harvests<\/td><td>Isaiah 11:6–9; 35:1–10; Amos 9:13; Romans 8:19–22<\/td><\/tr><tr><td>Long life<\/td><td>Dying at 100 counted young<\/td><td>Isaiah 65:20–22<\/td><\/tr><tr><td>Knowledge of God<\/td><td>\"The earth shall be full of the knowledge of the Lord as the waters cover the sea\"<\/td><td>Isaiah 11:9; Habakkuk 2:14; Jeremiah 31:34<\/td><\/tr><tr><td>The temple<\/td><td>A temple, river and land allotments; read literally (memorial worship) or symbolically<\/td><td>Ezekiel 40–48<\/td><\/tr><\/table><\/div><h3>Sin and death still exist<\/h3><p>Mortals still die (Isaiah 65:20). Nations that refuse to worship receive no rain (Zechariah 14:17–19). At the end, a final rebellion breaks out (Revelation 20:7–9). Even under perfect government, the human heart needs regeneration.<\/p><h3>What believers do during the Millennium<\/h3><p>Scripture gives the broad outline rather than a daily picture, but several roles are clear.<\/p><div class=\"tbl\"><table><tr><th>Role<\/th><th>What it involves<\/th><th>Key texts<\/th><\/tr><tr><td>Rule with Christ<\/td><td>Real authority, given in proportion to faithfulness: \"authority over ten cities\", \"over five cities\"<\/td><td>Luke 19:17–19; Matthew 25:21; Revelation 2:26–27; 5:10; 20:6<\/td><\/tr><tr><td>Judge<\/td><td>\"The saints will judge the world\"; the apostles judge the twelve tribes of Israel<\/td><td>1 Corinthians 6:2; Matthew 19:28; Daniel 7:22<\/td><\/tr><tr><td>Serve as priests<\/td><td>\"Priests of God and of Christ\", leading worship and representing God to the nations<\/td><td>Revelation 1:6; 20:6; 1 Peter 2:9; Isaiah 61:6<\/td><\/tr><tr><td>Teach and shepherd<\/td><td>The nations come to Zion \"that he may teach us his ways\", and the earth fills with the knowledge of the Lord<\/td><td>Isaiah 2:3; 11:9; Jeremiah 3:15<\/td><\/tr><tr><td>Share His table<\/td><td>Eating and drinking at Christ's table in His kingdom<\/td><td>Luke 22:29–30; Matthew 26:29<\/td><\/tr><\/table><\/div><ul><li><strong>In glorified bodies:<\/strong> believers raised or changed at the return no longer die or marry; they \"cannot die anymore\" (Luke 20:35–36). They live and serve among mortal people, much as the risen Jesus ate and talked with His disciples (Luke 24:36–43; John 21:9–14). That comparison is an inference, not a direct statement of Scripture.<\/li><li><strong>Rewards become roles:<\/strong> the judgment seat of Christ sets the scope of each believer's responsibility in the kingdom (Luke 19:17–19).<\/li><\/ul><h3>Why a Millennium?<\/h3><p>Premillennialists give several reasons for a thousand-year reign on this earth before the eternal state:<\/p><ul><li><strong>Promises kept in history:<\/strong> God promised Abraham a land (Genesis 15:18–21), David a throne (2 Samuel 7:12–16; Luke 1:32–33), and Israel a restored nation under the new covenant (Jeremiah 31:31–37). The Millennium is where these are fulfilled.<\/li><li><strong>Christ vindicated where He was rejected:<\/strong> the One crucified on earth reigns openly on earth (Psalm 2:6–9; Philippians 2:9–11; Hebrews 2:5–8).<\/li><li><strong>The Lord's Prayer answered:<\/strong> \"Your kingdom come, your will be done, on earth as it is in heaven\" (Matthew 6:10).<\/li><li><strong>A reign before \"the end\":<\/strong> Paul gives an order: Christ the firstfruits, \"then at his coming those who belong to Christ\", \"then comes the end\", when Christ hands the kingdom to the Father. Before that, \"he must reign until he has put all his enemies under his feet\" (1 Corinthians 15:23–28). Premillennialists read that reign as the period between the return and the end.<\/li><li><strong>A foretaste of the new creation:<\/strong> creation \"waits with eager longing\" to be set free (Romans 8:19–22). The Millennium shows a renewed earth before the final new heavens and new earth.<\/li><li><strong>The human heart exposed:<\/strong> the final rebellion shows that sin is a problem of the heart, not of environment (Revelation 20:7–9).<\/li><li><strong>The early church's view:<\/strong> many early Christian writers held this view, including Papias, Justin Martyr and Irenaeus. Irenaeus argued it is fitting for the righteous to receive their reward in the same creation where they suffered (Against Heresies, Book 5).<\/li><\/ul>"}, {"id": "e13", "title": "Satan released, Gog and Magog", "period": "Millennium", "cat": "event", "refs": "Rev 20:7–10; Ezek 38–39", "summary": "At the end of the thousand years Satan is released, deceives the nations into one last rebellion, and is destroyed by fire from heaven, then cast into the lake of fire for ever.", "body": "<h3>The final rebellion (Revelation 20:7–10)<\/h3><ul><li>Satan is loosed and deceives the nations \"at the four corners of the earth, Gog and Magog\". Their number \"is like the sand of the sea\".<\/li><li>They surround \"the camp of the saints and the beloved city\".<\/li><li>Fire comes down from God out of heaven and devours them.<\/li><li>The devil is cast into the lake of fire \"where the beast and the false prophet were\". They are still there after a thousand years, and they \"will be tormented day and night forever and ever\".<\/li><\/ul><h3>Why release Satan at all?<\/h3><p>\"He must be released for a little while\" (Revelation 20:3). Common explanations:<\/p><ul><li><strong>It exposes the human heart:<\/strong> people born into perfect conditions still rebel without a new heart.<\/li><li><strong>It vindicates God's final judgment:<\/strong> no one can blame environment or Satan's absence.<\/li><li><strong>It brings Satan's final, public defeat.<\/strong><\/li><\/ul><h3>How Revelation 20 relates to Ezekiel 38–39<\/h3><p>Ezekiel describes Gog, of the land of Magog, chief prince of Meshech and Tubal, invading restored Israel \"in the latter years\" and being destroyed by God.<\/p><div class=\"tbl\"><table><tr><th>View<\/th><th>Reasoning<\/th><\/tr><tr><td>Same event as Revelation 20<\/td><td>Same names; final invasion of God's people; fire from heaven (Ezekiel 38:22; 39:6)<\/td><\/tr><tr><td>Ezekiel fulfilled at or near Armageddon; Revelation reuses the names<\/td><td>Ezekiel's bird feast (39:17–20) matches Revelation 19:17–18. Burning weapons for seven years and burying for seven months (39:9, 12) need time afterward, which fits the start of the Millennium rather than its end<\/td><\/tr><tr><td>Ezekiel fulfilled during the tribulation<\/td><td>Common in pre-trib teaching, but less often held by post-tribulationists<\/td><\/tr><\/table><\/div>"}, {"id": "e14", "title": "Great white throne judgment", "period": "After the thousand years", "cat": "judgment", "refs": "Rev 20:11–15; John 5:22–29; Dan 12:2; Rom 2:5–6; Heb 9:27", "summary": "After the Millennium, the unbelieving dead of all ages are raised and judged according to their works. Death and Hades are thrown into the lake of fire.", "body": "<h3>The scene (Revelation 20:11–15)<\/h3><ul><li><strong>The throne:<\/strong> John sees \"a great white throne and him who was seated on it. From his presence earth and sky fled away\".<\/li><li><strong>The Judge:<\/strong> the Father \"has given all judgment to the Son\" (John 5:22, 27; Acts 17:31; 2 Timothy 4:1).<\/li><li><strong>Who is judged:<\/strong> \"the dead, great and small\". These are the rest of the dead who were not in the first resurrection (20:5). The sea, Death and Hades give up their dead. This is the \"resurrection of judgment\" (John 5:29; Daniel 12:2).<\/li><\/ul><h3>The books<\/h3><ul><li><strong>Books of works:<\/strong> \"the dead were judged by what was written in the books, according to what they had done\" (Romans 2:5–6; Matthew 12:36).<\/li><li><strong>Degrees of punishment:<\/strong> \"a severe beating\" versus \"a light beating\"; more tolerable for Tyre and Sodom (Luke 12:47–48; Matthew 11:21–24).<\/li><li><strong>The book of life:<\/strong> \"if anyone's name was not found written in the book of life, he was thrown into the lake of fire\" (20:15).<\/li><\/ul><h3>The end of death<\/h3><p>Death and Hades are thrown into the lake of fire: \"This is the second death, the lake of fire\" (20:14; 21:8). \"The last enemy to be destroyed is death\" (1 Corinthians 15:26).<\/p><h3>Why is the book of life opened?<\/h3><p>No one who rejected Christ will be found in it. It is \"the Lamb's book of life\" (21:27), the record of those who belong to Him (Luke 10:20; Philippians 4:3; Revelation 13:8), and good works cannot earn a place in it (Ephesians 2:8–9). So why open it here? Premillennial teachers give two answers, and Scripture does not settle which is right:<\/p><ul><li><strong>To show the verdict is just:<\/strong> on this view everyone at the throne is an unbeliever. The books of works show what each person did and decide the degree of punishment. The book of life is opened to show openly that their names are absent, so the verdict rests on not belonging to Christ, not on a tally of deeds.<\/li><li><strong>Because believers from the Millennium may be there:<\/strong> people born during the thousand years who trust Christ are written in the book of life. Scripture never says when those who die during the Millennium are raised, or when believers alive at its end are changed. Some teachers place them at this final resurrection, where their names are found. Revelation 20:15 says \"if anyone's name was not found\", which some read as implying that some names are found.<\/li><\/ul><p>Either way, believers raised at Christ's return are not at risk here. \"Over such the second death has no power\" (Revelation 20:6), and the believer \"does not come into judgment, but has passed from death to life\" (John 5:24).<\/p><h3>Compared with the judgment seat of Christ<\/h3><div class=\"tbl\"><table><tr><th><\/th><th>Judgment seat of Christ<\/th><th>Great white throne<\/th><\/tr><tr><td>Who<\/td><td>Believers<\/td><td>The unbelieving dead<\/td><\/tr><tr><td>Purpose<\/td><td>Rewards or loss of reward<\/td><td>Condemnation, by works<\/td><\/tr><tr><td>Timing<\/td><td>At the return, before the Millennium<\/td><td>After the Millennium<\/td><\/tr><tr><td>Outcome<\/td><td>Reigning with Christ<\/td><td>The lake of fire<\/td><\/tr><\/table><\/div><h3>Why it matters now<\/h3><p>\"It is appointed for man to die once, and after that comes judgment\" (Hebrews 9:27). God \"is patient toward you, not wishing that any should perish\" (2 Peter 3:9). This judgment is why the gospel is urgent.<\/p>"}, {"id": "e15", "title": "New heavens, new earth, New Jerusalem", "period": "After the thousand years", "cat": "event", "refs": "Rev 21–22; Isa 65:17; 66:22; 2 Pet 3:10–13; 1 Cor 15:24–28", "summary": "God makes all things new. The holy city descends from heaven, God dwells with His people, and the curse is gone for ever.", "body": "<h3>The new creation<\/h3><ul><li>\"I saw a new heaven and a new earth, for the first heaven and the first earth had passed away, and the sea was no more\" (Revelation 21:1; Isaiah 65:17; 66:22).<\/li><li>The heavenly bodies burn up and dissolve, and \"we are waiting for new heavens and a new earth in which righteousness dwells\" (2 Peter 3:10–13).<\/li><li>Creation is set free from its bondage to decay (Romans 8:21).<\/li><\/ul><h3>The city comes down<\/h3><ul><li>New Jerusalem comes \"down out of heaven from God, prepared as a bride adorned for her husband\" (Revelation 21:2, 10).<\/li><li>It is the city Abraham looked for (Hebrews 11:10, 16), the heavenly Jerusalem (Hebrews 12:22; Galatians 4:26), and the place Jesus went to prepare (John 14:2).<\/li><li>\"Behold, the dwelling place of God is with man… He will wipe away every tear from their eyes, and death shall be no more, neither shall there be mourning, nor crying, nor pain anymore\" (21:3–4). \"Behold, I am making all things new\" (21:5).<\/li><\/ul><h3>The city described<\/h3><div class=\"tbl\"><table><tr><th>Feature<\/th><th>Detail<\/th><th>Text<\/th><\/tr><tr><td>Size<\/td><td>12,000 stadia (about 1,400 miles or 2,200 km) in length, breadth and height, a cube like the Holy of Holies (1 Kings 6:20)<\/td><td>21:16<\/td><\/tr><tr><td>Gates<\/td><td>Twelve pearl gates bearing the names of the twelve tribes<\/td><td>21:12, 21<\/td><\/tr><tr><td>Foundations<\/td><td>Twelve foundations of precious stones bearing the names of the twelve apostles<\/td><td>21:14, 19–20<\/td><\/tr><tr><td>Street<\/td><td>Pure gold, like transparent glass<\/td><td>21:21<\/td><\/tr><tr><td>Temple<\/td><td>None: the Lord God and the Lamb are its temple<\/td><td>21:22<\/td><\/tr><tr><td>Light<\/td><td>No sun or moon; the glory of God lights it<\/td><td>21:23; Isaiah 60:19–20<\/td><\/tr><tr><td>Nations<\/td><td>Walk in its light; kings bring their glory into it<\/td><td>21:24–26<\/td><\/tr><tr><td>Purity<\/td><td>Nothing unclean enters, only those in the Lamb's book of life<\/td><td>21:27<\/td><\/tr><tr><td>River and tree<\/td><td>The river of life from the throne; the tree of life with twelve fruits, its leaves for the healing of the nations<\/td><td>22:1–2; Ezekiel 47:12<\/td><\/tr><\/table><\/div><h3>Eden restored: Genesis and Revelation<\/h3><div class=\"tbl\"><table><tr><th>Genesis<\/th><th>Revelation<\/th><\/tr><tr><td>Heavens and earth created (1:1)<\/td><td>New heavens and new earth (21:1)<\/td><\/tr><tr><td>A river and the tree of life (2:9–10)<\/td><td>The river of life and the tree of life (22:1–2)<\/td><\/tr><tr><td>God walks with man (3:8)<\/td><td>God dwells with His people (21:3)<\/td><\/tr><tr><td>The curse (3:17)<\/td><td>\"No longer will there be anything accursed\" (22:3)<\/td><\/tr><tr><td>Driven from His presence (3:24)<\/td><td>\"They will see his face\" (22:4)<\/td><\/tr><\/table><\/div><h3>The final word<\/h3><p>The Son hands the kingdom to the Father, \"that God may be all in all\" (1 Corinthians 15:24–28). The saints \"will reign forever and ever\" (22:5). \"Surely I am coming soon.\" Amen. \"Come, Lord Jesus!\" (22:20).<\/p>"}], "extras": []};
-const ERAS=[
- {name:"First coming",span:"1st century AD"},
- {name:"Church age",span:"about 2,000 years so far"},
- {name:"70th week",span:"7 years"},
- {name:"At His return",span:"in quick succession"},
- {name:"Millennium",span:"1,000 years"},
- {name:"After the thousand years",span:"for ever"}
-];
-const CATS={event:"Event",tribulation:"Tribulation",judgment:"Judgment"};
-const SOFT={event:"var(--gold-soft)",tribulation:"var(--wine-soft)",judgment:"var(--teal-soft)"};
-const COL={event:"var(--gold)",tribulation:"var(--wine)",judgment:"var(--teal)"};
-const NOTION={}; /* event id -> Notion page URL, filled in later */
-const VIEWS=[{id:"timeline",label:"Timeline"}].concat(DATA.extras.map(x=>({id:x.id,label:x.title})));
-const nav=document.querySelector("nav.views"), main=document.getElementById("main");
-let view="timeline", current="e01";
-function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function renderNav(){
-  if(!nav)return;
-  nav.innerHTML=VIEWS.map(v=>`<button role="tab" aria-selected="${v.id===view}" data-v="${v.id}">${esc(v.label)}</button>`).join("");
-  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{view=b.dataset.v;setHash();render()});
+(() => {
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const smooth = matchMedia("(prefers-reduced-motion: no-preference)").matches ? "smooth" : "auto";
+
+/* ---------- read the content templates ---------- */
+function read(sec) {
+  const s = sec.cloneNode(true);
+  const take = sel => { const el = s.querySelector(sel); if (el) el.remove(); return el; };
+  const h2 = take(":scope > h2"), summary = take(":scope > .summary"), refs = take(":scope > .refs");
+  return { title: h2 ? h2.textContent.trim() : "", summary: summary ? summary.innerHTML.trim() : "",
+    refs: refs ? refs.textContent.trim() : "", body: s.innerHTML.trim() };
 }
-function rail(){
-  let h='<div class="htl-wrap"><div class="htl" id="htl">';
-  ERAS.forEach(era=>{
-    const evs=DATA.events.filter(e=>e.period===era.name);
-    h+=`<section class="hera" aria-label="${esc(era.name)}"><div class="hera-head"><span class="era-name">${esc(era.name)}</span><span class="era-span">${esc(era.span)}</span></div><div class="hera-track">`;
-    evs.forEach(e=>{
-      const n=DATA.events.indexOf(e)+1;
-      h+=`<button class="hnode ev" data-id="${e.id}" data-cat="${e.cat}" aria-current="${e.id===current}" title="${esc(e.refs)}"><span class="hrail" aria-hidden="true"><span class="hdot"></span></span><span class="hn">${n}</span><span class="ht">${esc(e.title)}</span></button>`;
-    });
-    h+=`</div></section>`;
+const TL = $("#timeline-content").content, RV = $("#revelation-content").content;
+const ERAS = $$(".era", TL).map(el => ({ name: el.dataset.name, span: el.dataset.span, band: el.dataset.band || "", el }));
+const EVENTS = [];
+ERAS.forEach(era => {
+  era.events = $$(":scope > section", era.el).map(sec => ({ id: sec.dataset.id, kind: sec.dataset.kind || "event", era, ...read(sec) }));
+  EVENTS.push(...era.events);
+});
+const OVERVIEW = read($("[data-page=overview]", RV));
+const SEG = { prologue: "Opening", letters: "Letters to the churches", chrono: "Chronological", paren: "Parenthetical", epilogue: "Closing" };
+const CHAPTERS = $$("section[data-ch]", RV).map(sec => {
+  const [n, end = n] = sec.dataset.ch.split(/[-–]/).map(Number);   // one chapter ("6") or a run ("2-3")
+  const c = { n, end, label: end > n ? `${n}–${end}` : String(n), events: (sec.dataset.events || "").split(/\s+/).filter(Boolean), ...read(sec),
+    segs: (sec.dataset.parts || "").split(/\s+/).filter(Boolean).map(p => { const [type, verses = ""] = p.split(":"); return { type, verses }; }) };
+  c.covered = Boolean(c.summary || c.body);
+  return c;
+}).sort((a, b) => a.n - b.n);
+const chapter = n => CHAPTERS.find(c => n >= c.n && n <= c.end);
+const eventById = id => EVENTS.find(e => e.id === id);
+const CH_FOR = {};
+CHAPTERS.forEach(c => c.events.forEach(id => (CH_FOR[id] = CH_FOR[id] || []).push(c.n)));
+
+/* ---------- state and the URL hash: #e05, #reading, #rev-6 ---------- */
+const main = $("#main"), nav = $("nav.views");
+const state = { view: "timeline", event: EVENTS[0].id, page: "overview" };
+const hashFor = (view = state.view) => view === "timeline" ? "#" + state.event : state.page === "overview" ? "#reading" : "#rev-" + state.page;
+const setHash = () => { try { history.replaceState(null, "", hashFor()); } catch (e) {} };
+function fromHash() {
+  const h = decodeURIComponent(location.hash.slice(1)), m = /^rev-(\d+)$/.exec(h);
+  if (eventById(h)) Object.assign(state, { view: "timeline", event: h });
+  else if (h === "reading") Object.assign(state, { view: "reading", page: "overview" });
+  else if (m && chapter(+m[1])) {   // #rev-3 opens the section that covers chapter 3
+    Object.assign(state, { view: "reading", page: chapter(+m[1]).n });
+    if (state.page !== +m[1]) setHash();
+  }
+}
+
+/* ---------- shared pieces ---------- */
+const markColor = e => e.kind === "judgment" ? "teal" : e.era.band === "week" ? "wine" : "gold";
+function chip(n, small) {
+  const c = chapter(n), label = `Revelation ${c.label}: ${c.title}${c.covered ? "" : " (not covered yet)"}`;
+  return `<a class="chip${small ? " small" : ""}${c.covered ? "" : " later"}" href="#rev-${c.n}" data-n="${c.n}" title="${esc(label)}" aria-label="${esc(label)}">`
+    + `<span class="segs" aria-hidden="true">${c.segs.map(s => `<i class="seg-${s.type}"></i>`).join("")}</span><span class="cn">${c.label}</span></a>`;
+}
+function pager(prev, next) {
+  const link = (it, cls, word) => it ? `<a class="${cls}" href="${it.href}"><small>${word}</small>${esc(it.label)}</a>` : "";
+  return `<nav class="pager" aria-label="Previous and next">${link(prev, "prev", "Previous")}${link(next, "next", "Next")}</nav>`;
+}
+const xrefEvents = evs => `<p class="xref"><span>On the timeline:</span>${evs.map(e => `<a class="evlink" href="#${e.id}">${esc(e.title)}</a>`).join("")}</p>`;
+function labelTables(root) {   // gives each cell its column name, used when tables become cards on phones
+  $$(".tbl table", root).forEach(t => {
+    const rows = $$("tr", t), heads = rows.length ? $$("th", rows[0]).map(th => th.textContent.trim()) : [];
+    if (!heads.length) return;
+    rows[0].classList.add("head");
+    t.classList.toggle("rowhead", heads[0] === "");
+    rows.slice(1).forEach(r => $$("td", r).forEach((td, i) => { if (heads[i]) td.dataset.label = heads[i]; }));
   });
-  h+=`</div><p class="hint">Scroll sideways to see the whole timeline.</p></div>`;
-  h+=`<div class="legend" style="padding-left:0;margin:-1rem 0 1.5rem"><span><i class="lg" style="background:var(--gold);border-radius:50%"></i>Event</span><span><i class="lg" style="background:var(--wine)"></i>Tribulation</span><span><i class="lg" style="background:var(--teal);transform:rotate(45deg)"></i>Judgment</span></div>`;
-  return h;
 }
-function panel(){
-  const i=DATA.events.findIndex(e=>e.id===current), e=DATA.events[i];
-  const prev=DATA.events[i-1], next=DATA.events[i+1];
-  const nl=NOTION[e.id]?`<p class="notion">Your notes: <a href="${NOTION[e.id]}" target="_blank" rel="noopener">open in Notion</a></p>`:"";
-  return `<div class="panel-inner" style="--c:${COL[e.cat]};--soft:${SOFT[e.cat]}">
-   <p class="kicker">${i+1} of ${DATA.events.length} · ${esc(e.period)} · <b>${CATS[e.cat]}</b></p>
-   <h2 id="ptitle" tabindex="-1">${esc(e.title)}</h2>
-   <p class="lead">${esc(e.summary)}</p>
-   <p class="refs">${esc(e.refs)}</p>
-   <div class="body">${e.body}</div>${nl}
-   <div class="pager"><button ${prev?"":"disabled"} data-go="${prev?prev.id:""}">Previous: ${prev?esc(prev.title):""}</button><button ${next?"":"disabled"} data-go="${next?next.id:""}">Next: ${next?esc(next.title):""}</button></div></div>`;
+function reveal(panel, titleSel) {
+  const top = panel.getBoundingClientRect().top;
+  if (top < 0 || top > innerHeight * 0.6) panel.scrollIntoView({ behavior: smooth, block: "start" });
+  $(titleSel, panel).focus({ preventScroll: true });
 }
-function centerSel(smooth){const b=document.querySelector(`.ev[data-id="${current}"]`),r=document.getElementById("htl");if(b&&r){r.scrollTo({left:b.offsetLeft-r.clientWidth/2+b.clientWidth/2,behavior:smooth?"smooth":"auto"})}}
-function select(id,focus){
-  current=id;setHash();
-  document.querySelectorAll(".ev").forEach(b=>b.setAttribute("aria-current",b.dataset.id===id));
-  const p=document.getElementById("panel");p.innerHTML=panel();bindPager();centerSel(true);
-  if(focus){
-    const top=p.getBoundingClientRect().top;
-    if(top<0||top>window.innerHeight*0.6) p.scrollIntoView({behavior:"smooth",block:"start"});
-    document.getElementById("ptitle").focus({preventScroll:true});
+
+/* ---------- Timeline tab ---------- */
+function timelineView() {
+  // 79px fits the longest word ("Abomination", 74px) plus padding; narrower screens scroll sideways
+  const cols = ERAS.flatMap(era => era.events.map(() => era.events.length === 1 ? "minmax(96px,1.25fr)" : "minmax(79px,1fr)")).join(" ");
+  let n = 0;
+  const rail = ERAS.map(era => `<section class="era"${era.band ? ` data-band="${era.band}"` : ""} style="grid-column:span ${era.events.length}" aria-label="${esc(era.name)}">`
+    + `<div class="era-head"><span class="era-name">${esc(era.name)}</span><span class="era-span">${esc(era.span)}</span></div><div class="track">`
+    + era.events.map(e => `<button class="node" type="button" data-id="${e.id}" data-c="${markColor(e)}"${e.kind === "judgment" ? ' data-kind="judgment"' : ""} aria-current="false" title="${esc(e.refs)}">`
+      + `<span class="mark" aria-hidden="true"><span class="dot"></span></span><span class="num">${++n}</span><span class="t">${esc(e.title)}</span></button>`).join("")
+    + `</div></section>`).join("");
+  return `<div class="rail" id="rail" style="grid-template-columns:${cols}">${rail}</div>`
+    + `<p class="hint" id="hint" hidden>Scroll sideways to see the whole timeline.</p>`
+    + `<article class="hpanel" id="panel" aria-live="polite"></article>`;
+}
+function eventPanel() {
+  const i = EVENTS.findIndex(e => e.id === state.event), e = EVENTS[i], prev = EVENTS[i - 1], next = EVENTS[i + 1];
+  const c = markColor(e), chs = CH_FOR[e.id] || [];
+  return `<div class="panel-inner" style="--c:var(--${c});--soft:var(--${c}-soft)">`
+    + `<p class="kicker"><span>${i + 1} of ${EVENTS.length} · ${esc(e.era.name)}${e.kind === "judgment" ? " · <b>Judgment</b>" : ""}</span><button class="to-rail" type="button">All events ↑</button></p>`
+    + `<h2 id="ptitle" tabindex="-1">${esc(e.title)}</h2><p class="lead">${e.summary}</p><p class="refs">${esc(e.refs)}</p>`
+    + (chs.length ? `<p class="xref"><span>In Revelation:</span>${chs.map(n => chip(n, true)).join("")}</p>` : "")
+    + `<div class="body">${e.body}</div>`
+    + pager(prev && { href: "#" + prev.id, label: prev.title }, next && { href: "#" + next.id, label: next.title }) + `</div>`;
+}
+function fitRail(center) {
+  const rail = $("#rail");
+  if (!rail) return;
+  const scrolls = rail.scrollWidth > rail.clientWidth + 1;
+  $("#hint").hidden = !scrolls;
+  if (scrolls && center) {
+    const r = rail.getBoundingClientRect(), b = $(`.node[data-id="${state.event}"]`).getBoundingClientRect();
+    rail.scrollBy({ left: b.left + b.width / 2 - (r.left + r.width / 2) });
   }
 }
-function bindPager(){document.querySelectorAll(".pager button[data-go]").forEach(b=>b.onclick=()=>{if(b.dataset.go){select(b.dataset.go,true)}})}
-function render(){
-  renderNav();
-  if(view==="timeline"){
-    main.innerHTML=`${rail()}<article class="hpanel" id="panel" aria-live="polite">${panel()}</article>`;
-    const htl=document.getElementById("htl");htl.addEventListener("keydown",ev=>{const i=DATA.events.findIndex(e=>e.id===current);let j=null;if(ev.key==="ArrowRight")j=i+1;if(ev.key==="ArrowLeft")j=i-1;if(j!==null&&DATA.events[j]){ev.preventDefault();select(DATA.events[j].id,false);document.querySelector(`.ev[data-id="${DATA.events[j].id}"]`).focus()}});centerSel(false);
-    document.querySelectorAll(".ev").forEach(b=>b.onclick=()=>select(b.dataset.id,true));
-    bindPager();
-  } else {
-    const x=DATA.extras.find(x=>x.id===view);
-    main.innerHTML=`<article class="ref-view"><h2>${esc(x.title)}</h2><div class="body">${x.body}</div></article>`;
-  }
+function showEvent(focus) {
+  $$(".node").forEach(b => b.setAttribute("aria-current", b.dataset.id === state.event));
+  const p = $("#panel");
+  p.innerHTML = eventPanel();
+  labelTables(p);
+  $(".to-rail", p).onclick = () => main.scrollIntoView({ behavior: smooth, block: "start" });
+  fitRail(true);
+  if (focus) reveal(p, "#ptitle");
 }
-function setHash(){try{history.replaceState(null,"",view==="timeline"?"#"+current:"#"+view)}catch(e){}}
-(function init(){
-  const h=(location.hash||"").slice(1);
-  if(DATA.events.some(e=>e.id===h)){current=h}
-  else if(DATA.extras.some(x=>x.id===h)){view=h}
-  render();
+function bindTimeline() {
+  const rail = $("#rail");
+  rail.addEventListener("click", ev => {
+    const b = ev.target.closest(".node");
+    if (b) { state.event = b.dataset.id; setHash(); showEvent(true); }
+  });
+  rail.addEventListener("keydown", ev => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[ev.key];
+    const j = EVENTS.findIndex(e => e.id === state.event) + (step || 0);
+    if (!step || !ev.target.closest(".node") || !EVENTS[j]) return;
+    ev.preventDefault();
+    state.event = EVENTS[j].id; setHash(); showEvent(false);
+    $(`.node[data-id="${state.event}"]`).focus();
+  });
+}
+
+/* ---------- Reading Revelation tab ---------- */
+function readingView() {
+  return `<div class="chmap" aria-label="Chapters of Revelation"><a class="chip start" href="#reading" data-n="overview">Before you start</a>${CHAPTERS.map(c => chip(c.n)).join("")}</div>`
+    + `<div class="key"><span class="k"><i class="sw sw-chrono" aria-hidden="true"></i>Chronological</span>`
+    + `<span class="k"><i class="sw sw-paren" aria-hidden="true"></i>Parenthetical</span>`
+    + `<span class="k"><i class="sw sw-frame" aria-hidden="true"></i>Opening, letters, closing</span>`
+    + `<span class="k"><i class="sw sw-later" aria-hidden="true"></i>Faded: not covered in class yet</span></div>`
+    + `<article class="hpanel" id="rpanel" aria-live="polite"></article>`;
+}
+function readingPanel() {
+  if (state.page === "overview") {
+    const first = CHAPTERS[0];
+    return `<div class="panel-inner" style="--c:var(--blue);--soft:var(--blue-soft)"><p class="kicker"><span>Reading Revelation</span></p>`
+      + `<h2 id="rtitle" tabindex="-1">${esc(OVERVIEW.title)}</h2><p class="lead">${OVERVIEW.summary}</p><div class="body">${OVERVIEW.body}</div>`
+      + pager(null, { href: "#rev-" + first.n, label: `Revelation ${first.label}: ${first.title}` }) + `</div>`;
+  }
+  const i = CHAPTERS.findIndex(c => c.n === state.page), c = CHAPTERS[i], prev = CHAPTERS[i - 1], next = CHAPTERS[i + 1];
+  const kinds = c.segs.map(s => SEG[s.type] + (s.verses ? ` (${c.n}:${s.verses})` : "")).join(" · ");
+  const evs = c.events.map(eventById).filter(Boolean), links = evs.length ? xrefEvents(evs) : "";
+  return `<div class="panel-inner" style="--c:var(--blue);--soft:var(--blue-soft)">`
+    + `<p class="kicker"><span>Revelation ${c.label} · ${esc(kinds)}</span></p><h2 id="rtitle" tabindex="-1">${esc(c.title)}</h2>`
+    + (c.covered ? (c.summary ? `<p class="lead">${c.summary}</p>` : "") + links + `<div class="body">${c.body}</div>`
+                 : `<p class="lead muted">Not covered in class yet. Notes will be added when the class reaches this chapter.</p>${links}`)
+    + pager(prev ? { href: "#rev-" + prev.n, label: `Revelation ${prev.label}: ${prev.title}` } : { href: "#reading", label: "Before you start" },
+            next && { href: "#rev-" + next.n, label: `Revelation ${next.label}: ${next.title}` }) + `</div>`;
+}
+function showPage(focus) {
+  $$(".chmap .chip").forEach(a => a.setAttribute("aria-current", a.dataset.n === String(state.page)));
+  const p = $("#rpanel");
+  p.innerHTML = readingPanel();
+  labelTables(p);
+  if (focus) reveal(p, "#rtitle");
+}
+
+/* ---------- render ---------- */
+function render(focus) {
+  nav.innerHTML = [["timeline", "Timeline"], ["reading", "Reading Revelation"]]
+    .map(([v, label]) => `<a role="tab" href="${hashFor(v)}" aria-selected="${v === state.view}">${label}</a>`).join("");
+  if (main.dataset.view !== state.view) {
+    main.dataset.view = state.view;
+    main.innerHTML = state.view === "timeline" ? timelineView() : readingView();
+    if (state.view === "timeline") bindTimeline();
+  }
+  if (state.view === "timeline") showEvent(focus); else showPage(focus);
+}
+let fromTab = false, resizeTimer;
+nav.addEventListener("click", ev => { if (ev.target.closest("a")) fromTab = true; });
+addEventListener("hashchange", () => { fromHash(); render(!fromTab); fromTab = false; });
+addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => fitRail(false), 150); });
+fromHash();
+render(/^#(e\d+|rev-\d+)$/.test(location.hash));
 })();
 </script>
 </body>
